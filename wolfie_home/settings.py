@@ -122,3 +122,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# configurate logging.
+LOGGING_CONFIG = None
+
+import logging
+logging.basicConfig(filename='wolfie_home.log', \
+                    format='%(levelname)s,%(asctime)s,%(filename)s:%(message)s', \
+                    level=logging.NOTSET)
