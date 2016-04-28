@@ -24,6 +24,7 @@ urlpatterns = [
     # ajax
     url(r'^api/login$', api.login, name='login'),
     url(r'^api/logout$', api.logout, name='logout'),
-    url(r'^api/devices$', api.devices, name='devices'),
+    url(r'^api/house$', api.house, name='devices'),
     url(r'^api/control$', api.control, name='control'),
+    url(r'^api/module$', api.module, name='module')
 ]
