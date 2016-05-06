@@ -90,10 +90,9 @@ class ApiHouseTest(TestCase):
         resp = self.client.post('/api/house')
         self.assertEqual(resp.status_code, 200)
         
-        house_info = json.loads(resp.content())
-        f = open('schema/house_info.json', 'r')
-        house_schema = json.load(f)
-        jsonschema.validate(house_info, house_schema)
+        house_info = json.loads()
+        f = open('testout/house', 'w')
+        f.write('house response: %s\n',resp.content())
         f.close()
 
         # logout
