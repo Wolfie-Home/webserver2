@@ -34,6 +34,7 @@ class WolfieDB():
                 'database': 'wolfie_home',
                 'raise_on_warnings': True,
             }
+        self.config = config
         self.conn = mysql.connector.connect(**config)
             
     def __check_conn(self):
@@ -51,9 +52,16 @@ class WolfieDB():
             logging.warning('reconnect successfully')
             return True
         else:
-            logging.warning('failed to reconnect')
-            return False
-
+            try:
+                # reconstruct a mysql connection
+                re_conn = mysql.connector.connect(**self.config)
+            except Error as e:
+                # even this failed...
+                logging.warning('failed to reconnect')
+                return False
+            logging.warning('re-create a connection successfully')
+            self.conn = re_conn
+            return True
 
     def query_user(self, cmd, columns):
         '''
