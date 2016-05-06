@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "house information",
+    "type": "object",
+    "required": ["house", "mod_lists"],
+    "properties": {
+	"house_name": { "type": "string" },
+	"mod_lists": {
+	    "type": "array",
+	    "items": {
+		"type": "object",
+		"required": ["uid", "module"],
+		"properties": {
+		    "uid": { "type": "string" },
+		    "module": {
+			"type": "string",
+			"enum": ["battery", "security", "wireless", "speaker_led", "environment"]
+		    },
+		    "location": {"type": "string"},
+		    "mod_name": {"type": "string"}
+		}
+	    }
+	}
+    }
+}
+	

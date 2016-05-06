@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "data about an environment module",
+    "type": "object",
+    "required": ["Hum", "Tmp", "Bar"],
+    "properties": {
+	"Hum": {"type": "integer"},
+	"Tmp": {"type": "integer"},
+	"Bar": {"type": "integer"}
+    }
+}

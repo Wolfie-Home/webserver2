@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "data about a wireless module",
+    "type": "object",
+    "required": ["button_numbers", "PBn"],
+    "properties": {
+	"button_numbers": {"type": "integer", "minimum": "1"},
+	"PBn": {
+	    "type": "array",
+	    "items": {
+	        "type": "string",
+		"minItems": 1
+	    }
+        }
+    }
+}
