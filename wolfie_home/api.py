@@ -2,7 +2,9 @@ from django.http import HttpResponse
 from wolfie_db import WolfieDB
 import json
 import paho.mqtt.publish as publish
+import paho.mqtt.client as mqtt
 import logging
+
 
 db = WolfieDB()
 
@@ -19,7 +21,7 @@ def login(request):
     username = request.POST['username']
     password = request.POST['password']
     ret, data = db.query_user(WolfieDB.QUERY_USER_GET, {'username': username})
-    if not ret or resp['password'] != password:
+    if not ret or data['password'] != password:
         logging.warning('wrong password, %s, for user %s', password, username)
         resp.status_code = 400
         return resp
@@ -74,7 +76,8 @@ def house(request):
 def control(request):
     logging.info('receive control request')
     resp = HttpResponse()
-    if not request.method == 'POST' or \
+    if not request.COOKIES.has_key('username') or \
+       not request.method == 'POST' or \
        not request.POST.has_key('topic') or \
        not request.POST.has_key('payload'):
         logging.warning('invalid control request')
@@ -83,7 +86,7 @@ def control(request):
 
     topic = request.POST['topic']
     payload = request.POST['payload']
-    publish.single(topic, payload=payload, qos=0)
+    publish.single(topic, payload=payload, qos=0, retain=False, hostname="localhost", port=1883)
     resp.status_code = 200
     logging.info('control request process successfully')
     return resp
@@ -114,7 +117,9 @@ def module(request):
             return resp
         
     logging.info('receive module request')
-    if not request.method != 'POST' or \
+
+    if not request.COOKIES.has_key('username') or \
+       not request.method == 'POST' or \
        not request.POST.has_key('command') or \
        not request.POST.has_key('module_uids') or \
        not request.POST.has_key('modules'):
@@ -124,7 +129,7 @@ def module(request):
     command = request.POST['command']
     module_uids = request.POST['module_uids']
     modules = request.POST['modules']
-    modules_uids_tokens = modules.split(',')
+    modules_uids_tokens = module_uids.split(',')
     modules_tokens = modules.split(',')
     if len(modules_uids_tokens) != len(modules_tokens):
         return ret_resp(400, error_code=1, error_msg='different length of tokens')
@@ -151,7 +156,7 @@ def module(request):
                 }
             )
             modules_data.append(module_data)
-        return ret_resp(200, modules=json.dumps(modules.data))
+        return ret_resp(200, modules=json.dumps(modules_data))
 
     elif command == 'get_module_all':
         modules_data = []
@@ -169,14 +174,14 @@ def module(request):
             for m in data:
                 module_data.append(
                     {
-                        'timestamp': data['time'],
-                        'uid': data['uid'],
-                        'module': data['module'],
-                        'content': data['mod_content']
+                        'timestamp': m['time'],
+                        'uid': m['uid'],
+                        'module': m['module'],
+                        'content': m['mod_content']
                     }
                 )
             modules_data.append(module_data)
-        return ret_resp(200, modules=json.dumps(modules.data))
+        return ret_resp(200, modules=json.dumps(modules_data))
         
     else:
         logging.warning('invalid module request, invalid command')

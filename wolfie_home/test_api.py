@@ -2,7 +2,6 @@ import api
 from unittest import TestCase
 from django.test import Client
 from django.core.urlresolvers import resolve
-import jsonschema
 import json
 
 
@@ -15,21 +14,15 @@ class ApiLoginTest(TestCase):
         self.assertEqual(found.func, api.login)
 
     def test_login_failure(self):
-        # fail. no POST fields are specified.
-        post_data = {}
-        resp = self.client.post('/api/login', post_data)
-        self.assertEqual(resp.status_code, 400)
-        # fail 2
         post_data = {'username': 'jack', 'password': '123456'}
         resp = self.client.get('/api/login', post_data)
         self.assertEqual(resp.status_code, 400)
-        # fail 3
+
         post_data = {'username': 'jack', 'password': '123'}
         resp = self.client.post('/api/login', post_data)
         self.assertEqual(resp.status_code, 400)
 
     def test_login_success(self):
-        # fail 3
         post_data = {'username': 'jack', 'password': '123456'}
         resp = self.client.post('/api/login', post_data)
         self.assertEqual(resp.status_code, 301)
@@ -90,9 +83,8 @@ class ApiHouseTest(TestCase):
         resp = self.client.post('/api/house')
         self.assertEqual(resp.status_code, 200)
         
-        house_info = json.loads()
-        f = open('testout/house', 'w')
-        f.write('house response: %s\n',resp.content())
+        f = open('wolfie_home/testout/house', 'w+')
+        f.write('house response: %s\n' % resp.content)
         f.close()
 
         # logout
@@ -106,8 +98,8 @@ class ApiModulesTest(TestCase):
         self.client = Client()
 
     def test_url_resolve(self):
-        foundn = resolve('/api/module')
-        self.assertEqaul(found.func, api.module)
+        found = resolve('/api/module')
+        self.assertEqual(found.func, api.module)
 
     def test_module_failure(self):
         resp = self.client.get('/api/module')
@@ -125,7 +117,7 @@ class ApiModulesTest(TestCase):
         # login
         login_data = {'username': 'jack', 'password': '123456'}
         resp = self.client.post('/api/login', login_data)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 301)
 
         req_data = {
             'command': 'get_module_ecent',
@@ -143,9 +135,9 @@ class ApiModulesTest(TestCase):
         # login
         login_data = {'username': 'jack', 'password': '123456'}
         resp = self.client.post('/api/login', login_data)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 301)
 
-        f = open('testout/module','w')
+        f = open('wolfie_home/testout/module','w+')
 
         req_data = {
             'command': 'get_module_recent',
@@ -158,11 +150,11 @@ class ApiModulesTest(TestCase):
         f.write('sending :\n')
         f.write('%s\n' % json.dumps(req_data))
         f.write('getting back:\n')
-        f.write('%s\n', resp.content)
+        f.write('%s\n' % resp.content)
         f.write('------------------\n')
 
         req_data = {
-            'command': 'get_module_recent_all',
+            'command': 'get_module_all',
             'module_uids' : '12345678,1244332',
             'modules': 'battery,environment'
         }
@@ -172,7 +164,7 @@ class ApiModulesTest(TestCase):
         f.write('sending :\n')
         f.write('%s\n' % json.dumps(req_data))
         f.write('getting back:\n')
-        f.write('%s\n', resp.content)
+        f.write('%s\n' % resp.content)
         f.write('------------------\n')
         
         f.close()
