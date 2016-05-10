@@ -20,6 +20,8 @@ from . import views, api
 urlpatterns = [
     url(r'^admin/', admin.site.urls), 
     url(r'^$', views.index, name='index'),
+    url(r'^house$', views.house, name='house'),
+
 
     # ajax
     url(r'^api/login$', api.login, name='login'),

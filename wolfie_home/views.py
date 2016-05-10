@@ -1,5 +1,12 @@
 from django.http import HttpResponse
+from django.template import loader
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    index_template = loader.get_template('wolfie_home/login.html')
+    return HttpResponse(index_template.render(None, request))
+
+
+def house(request):
+    index_template = loader.get_template('wolfie_home/login.html')
+    return HttpResponse(index_template.render(None, request))
