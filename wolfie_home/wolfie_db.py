@@ -103,7 +103,12 @@ class WolfieDB():
             statement = 'SELECT * FROM %s WHERE username=\'%s\'' \
                         % (WolfieDB.USERS_TABLE, columns['username'])
             self.conn.cmd_query(statement) # this should not throw exception
-            (data, _) = self.conn.get_row()
+            try:
+                (data, _) = self.conn.get_row()
+            except Exception as e:
+                # unexpected behavior. treat it as a failure
+                logging.warning(str(e));
+                return False, None
             if data == None:
                 return False, None
             user_info = dict()
@@ -165,7 +170,11 @@ class WolfieDB():
                         + 'ORDER BY time DESC LIMIT 1') \
                         % (WolfieDB.HOUSE_TABLE, columns['uid'], columns['module'])
             self.conn.cmd_query(statement) # this should not throw exception
-            (data, _) = self.conn.get_row()
+            try:
+                (data, _) = self.conn.get_row()
+            except Exception as e:
+                logging.warning(str(e))
+                return False, None
             if data == None:
                 return False, None
             module_info = dict()
@@ -184,7 +193,11 @@ class WolfieDB():
             statement = ('SELECT * FROM %s WHERE uid=\'%s\' AND module=\'%s\'') \
                         % (WolfieDB.HOUSE_TABLE, columns['uid'], columns['module'])
             self.conn.cmd_query(statement) # this should not throw exception
-            data, _ = self.conn.get_rows()
+            try:
+                data, _ = self.conn.get_rows()
+            except Exception as e:
+                logging.warning(str(e))
+                return False, None
             if data == []:
                 return False, None
 
