@@ -45,7 +45,10 @@ class WolfieDB():
         '''
         if self.conn.is_connected():
             return True
-        self.conn.get_rows()
+        try:
+            self.conn.get_rows()
+        except Exception as e:
+            logging.warning(str(e))
 
         logging.warning('lose connection, and try to reconnect')
         if self.conn.reconnect(attempts=3, delay=100) == True:
