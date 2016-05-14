@@ -1,4 +1,4 @@
-function cj_redirect(message, message_type) {
+function cj_msg_redirect(message, message_type) {
     var get_req = 'message?message=' + message + 
 	'&message_type=' + message_type;
     window.location.replace(get_req);
@@ -23,25 +23,27 @@ $(document).ready(function() {
 
     var get_house_info_fail_cb = function(jqxhr) {
 	// let's say it failed
-	console.log('failed to get_house_info');
 	console.log(jqxhr);
-	jjjjjjjjjjjjjjjjjjj();	// abort
+	message = 'failed to get information about the house. forget to login first?';
+	message_type = 'error';
+	cj_msg_redirect(message, message_type);
     };
 
     var module_success_cb = function(data) {
-	// building table
-	console.log(data);
-	$('body').append(data+'<br>');
+	// TODO building table
+	$('#content').append(data+'<br>');
     };
 
-    var module_failed_cb = function(data) {
-	console.log(data);
-	jjjjjjjjjjjjjjjjjjj();	// abort
+    var module_failed_cb = function(jqxhr) {
+	message = 'getting an error when getting module. refresh /house can help';
+	message_type = 'error';
+	cj_msg_redirect(message, message_type);
     };
 
     var module_failed_unknown_cb = function(jqxhr) {
-	console.log(jqxhr);
-	jjjjjjjjjjjjjjjjjjjj();
+	message = 'unknown error when getting module. refresh /house can help';
+	message_type = 'error';
+	cj_msg_redirect(message, message_type);
     };
 
     var create_table = function(mod_type, uid) {
@@ -73,7 +75,7 @@ $(document).ready(function() {
 	}
     };
 
-    // main
+    // constructing tables
     var ajax_house = {
 	'url': 'api/house',
 	'statusCode': {
@@ -82,6 +84,35 @@ $(document).ready(function() {
 	'error': get_house_info_fail_cb,
 	'method': 'POST'
     };
-    $.ajax(ajax_house)
+    $.ajax(ajax_house);
+
+
+    // assigning logout event handler
+    $('#logout').click(function() {
+	var ajax_logout_success = function(data, status, jqxhr) {
+	    if (jqxhr.status == 200) {
+		// successfully logout, go to home page
+		window.location.replace('/');
+	    } else {
+		console.log(jqxhr);
+	    }
+	};
+
+	var ajax_logout_fail = function(jqxhr) {
+	    console.log(jqxhr);
+	};
+
+	var ajax_logout = {
+	    'url': 'api/logout',
+	    'success': ajax_logout_success,
+	    'error': ajax_logout_fail,
+	    'method': 'POST'
+	}
+
+	$.ajax(ajax_logout);
+    });
+
 
 });
+
+
