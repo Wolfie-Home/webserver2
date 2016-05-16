@@ -132,5 +132,5 @@ LOGGING_CONFIG = None
 
 import logging
 logging.basicConfig(filename='wolfie_home.log', \
-                    format='%(levelname)s,%(asctime)s,%(filename)s:%(message)s', \
+                    format='%(levelname)s,%(asctime)s,%(filename)s at line %(lineno)s:%(message)s', \
                     level=logging.NOTSET)
