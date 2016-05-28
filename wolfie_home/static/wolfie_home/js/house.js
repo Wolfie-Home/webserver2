@@ -1,29 +1,26 @@
 function cj_msg_redirect(message, message_type) {
+    // THINK, do i need this?
     var get_req = 'message?message=' + message + 
 	'&message_type=' + message_type;
-    window.location.replace(get_req);
+    console.log('got an error: '+get_req);
+    // window.location.replace(get_req);
 }
 
 
 $(document).ready(function() {
     console.log('ready');
 
-    // so many hacks just to achieve one thing: make a shared object
-    // visible to some callback functions.... javascript...
+    // a global shared object visible to some functions.
     window.myglb = {}
 
     var get_house_info_cb = function(data,status) {
 	// let's say it failed
-	console.log(data);
 	window.myglb['house_info'] = JSON.parse(data)
-	console.log(window.myglb['house_info']);
 	create_tables();
     };
 
-
     var get_house_info_fail_cb = function(jqxhr) {
 	// let's say it failed
-	console.log(jqxhr);
 	message = 'failed to get information about the house. forget to login first?';
 	message_type = 'error';
 	cj_msg_redirect(message, message_type);
@@ -52,7 +49,6 @@ $(document).ready(function() {
 	    'module_uids': uid+'',
 	    'modules': mod_type+''
 	};
-	console.log(req);
 	var ajax_module = {
 	    'url': 'api/module',
 	    'data': req,
@@ -67,7 +63,6 @@ $(document).ready(function() {
     };
 
     var create_tables = function() {
-	console.log(window.myglb['house_info']);
 	var house_info = window.myglb['house_info'];
 	for (var i = 0; i < house_info['mod_list'].length; ++i) {
 	    var mod = house_info['mod_list'][i];
@@ -111,7 +106,6 @@ $(document).ready(function() {
 
 	$.ajax(ajax_logout);
     });
-
 
 });
 

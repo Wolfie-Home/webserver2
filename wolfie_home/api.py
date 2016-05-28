@@ -1,12 +1,12 @@
 from django.http import HttpResponse
-from wolfie_db import WolfieDB
+from wolfie_db import WolfieDB, WolfieUsersDB, WolfieHouseDB
 import json
 import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
 import logging
 
-
-db = WolfieDB()
+db_users = WolfieUsersDB()
+db_house = WolfieHouseDB()
 
 def login(request):
     logging.info('receive a login request')
@@ -18,10 +18,10 @@ def login(request):
         resp.status_code = 400
         return resp
 
-    username = request.POST['username']
     password = request.POST['password']
-    ret, data = db.query_user(WolfieDB.QUERY_USER_GET, {'username': username})
-    if not ret or data['password'] != password:
+    username = request.POST['username']
+    ret, user = db_users.get_user_by_username(username)
+    if not ret or user['password'] != password:
         logging.warning('wrong password, %s, for user %s', password, username)
         resp.status_code = 400
         return resp
@@ -58,14 +58,13 @@ def house(request):
         resp.status_code = 400
         return resp
 
-    ret, data = db.query_user(WolfieDB.QUERY_USER_GET, \
-                        {'username': request.COOKIES['username']})
+    ret, user = db_users.get_user_by_username(request.COOKIES['username'])
     if not ret:
         logging.warning('invalid username cookie')
         resp.status_code = 400
         return resp
 
-    house_info = json.dumps(data['house_info'])
+    house_info = json.dumps(user['house_info'])
     resp.write(house_info)
     resp.status_code = 200
     logging.info('house request process succussfully')
@@ -73,6 +72,7 @@ def house(request):
         
 
 
+#  TODO verify the house is indeed the user's
 def control(request):
     logging.info('receive control request')
     resp = HttpResponse()
@@ -86,13 +86,13 @@ def control(request):
 
     topic = request.POST['topic']
     payload = request.POST['payload']
-    publish.single(topic, payload=payload, qos=0, retain=False, hostname="localhost", port=1883)
+    publish.single(topic, payload=payload, qos=0, retain=False, hostname='localhost', port=1883)
     resp.status_code = 200
     logging.info('control request process successfully')
     return resp
 
 
-
+# TODO need to verify the request belongs to the user.
 def module(request):
     def ret_resp(status_code, modules=None, error_code=None, error_msg=None):
         '''
@@ -138,15 +138,10 @@ def module(request):
         modules_data = []
         for i in range(len(modules_uids_tokens)):
             module_data = []
-            cols = {
-                'uid': modules_uids_tokens[i],
-                'module': modules_tokens[i]
-            }
-            ret, data = db.query_house(WolfieDB.QUERY_HOUSE_GET, cols)
+            ret, data = db_house.get_module(modules_uids_tokens[i], modules_tokens[i])
             if not ret:
                 logging.warning('failed to query in module request')
                 return ret_resp(400, error_code=2, error_msg='fail to query')
-
             module_data.append(
                 {
                     'timestamp': data['time'],
@@ -155,7 +150,7 @@ def module(request):
                     'content': data['mod_content']
                 }
             )
-            modules_data.append(module_data)
+        modules_data.append(module_data)
         return ret_resp(200, modules=json.dumps(modules_data))
 
     elif command == 'get_module_all':
@@ -166,7 +161,7 @@ def module(request):
                 'uid': modules_uids_tokens[i],
                 'module': modules_tokens[i]
             }
-            ret, data = db.query_house(WolfieDB.QUERY_HOUSE_GET_ALL, cols)
+            ret, data = db_house.get_module(modules_uids_tokens[i], modules_tokens[i])
             if not ret:
                 logging.warning('failed to query all in module request')
                 return ret_resp(400, error_code=2, error_msg='fail to query all')
@@ -180,7 +175,7 @@ def module(request):
                         'content': m['mod_content']
                     }
                 )
-            modules_data.append(module_data)
+        modules_data.append(module_data)
         return ret_resp(200, modules=json.dumps(modules_data))
         
     else:
