@@ -161,7 +161,7 @@ def module(request):
                 'uid': modules_uids_tokens[i],
                 'module': modules_tokens[i]
             }
-            ret, data = db_house.get_module(modules_uids_tokens[i], modules_tokens[i])
+            ret, data = db_house.get_module_all(modules_uids_tokens[i], modules_tokens[i])
             if not ret:
                 logging.warning('failed to query all in module request')
                 return ret_resp(400, error_code=2, error_msg='fail to query all')
