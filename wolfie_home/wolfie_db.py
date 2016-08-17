@@ -19,7 +19,7 @@ class WolfieDB():
         self.conn = None        # mysql connection
         if config == None:
             config = {
-                'user': 'chaojie',
+                'user': 'wolfie',
                 'password': 'dummypass',
                 'host': 'localhost',
                 'database': 'wolfie_home',
