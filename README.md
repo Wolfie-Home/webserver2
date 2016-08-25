@@ -1,14 +1,3 @@
-### Run locally
-```
-python manage.py runserver
-```
-### Run globally
-Allows computers from different IPs to issue HTTP request.
-```
-./run
-```
-
-
 ### install dependancies
 
 ``` shell
@@ -39,3 +28,21 @@ $ mysql -u root -p
 > GRANT ALL PRIVILEGES ON wolfie_home.* TO 'wolfie'@'localhost';
 ```
 Then create tables. [See here.](https://github.com/Wolfie-Home/Documents/blob/bumsik/Design%20Document/Design_Document.md#51-mysql)
+
+
+### Before Running Django 
+Any changes to static files need to run following, in order to make it visible to the webserver
+```
+python manage.py collectstatic
+```
+
+### Run locally
+```
+python manage.py runserver
+```
+### Run globally
+Allows computers from different IPs to issue HTTP request.
+```
+python manage.py runserver 0.0.0.0:8000
+```
+

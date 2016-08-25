@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,7 +52,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'wolfie_home.urls'
+ROOT_URLCONF = 'wolfie_home.app'
 
 TEMPLATES = [
     {
@@ -122,15 +123,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # configurate logging.
 LOGGING_CONFIG = None
-
-import logging
 logging.basicConfig(filename='wolfie_home.log', \
-                    format='%(levelname)s,%(asctime)s,%(filename)s at line %(lineno)s:%(message)s', \
+                    format='%(levelname)s,%(asctime)s,' + \
+                           '%(filename)s at line %(lineno)s:%(message)s', \
                     level=logging.NOTSET)
