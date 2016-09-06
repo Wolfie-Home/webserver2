@@ -1,6 +1,11 @@
 ### install dependancies
 
 ``` shell
+# install mysql. Make sure you are installing MySQL 5.5 or higher.
+# If you are installing it on Raspberry Pi, add the following in /etc/apt/sources.list
+# deb http://archive.raspbian.org/raspbian/ stretch main
+$ sudo apt-get install mysql-server-5.6
+
 # install uwsgi
 $ pip install uwsgi
 

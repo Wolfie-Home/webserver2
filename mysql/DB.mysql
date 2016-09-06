@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.14, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.30, for debian-linux-gnueabihf (armv7l)
 --
 -- Host: localhost    Database: wolfie_home
 -- ------------------------------------------------------
--- Server version	5.7.14
+-- Server version	5.6.30-1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -234,6 +234,435 @@ LOCK TABLES `User` WRITE;
 INSERT INTO `User` VALUES (1,'defaultUser','ea0f5b13c05adaa2db5eb6cc001a632b21b2969db8aa1c88ca704ed16df54d8cd4988c8c89893ea4c2ce6bd2c064373253088dfe7fa84970ebd1f3af5e1d7272','kbumsik@gmail.com','f56d0794','2016-08-25 11:36:33','2016-08-25 11:36:33');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'wolfie_home'
+--
+
+--
+-- Dumping routines for database 'wolfie_home'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `DataField_Add_I` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DataField_Add_I`(
+    IN `DeviceID_in` 		INTEGER,
+	IN `Name_in` 			VARCHAR(10),
+    IN `Controllable_in` 	TINYINT(1),
+    IN `DataType_in` 		INTEGER,
+    IN `Description_in` 	VARCHAR(50) -- Optional, can be NULL
+
+-- Returns (single-row return):
+-- 	`Id`			<int>	Newly created ID
+-- 	`DeviceRef`		<int>
+-- 	`DatafieldName`	<string>
+-- 	`Controllable`	<bool?>
+-- 	`DataTypeRef`	<int>
+-- 	`Description`	<string>
+)
+BEGIN
+	-- input paramets handling
+	IF `Description_in` IS NULL THEN
+		SET `Description_in` = "";
+	END IF;
+    
+    -- Insert
+	INSERT INTO `DataField`(`DeviceRef`,`DatafieldName`,`Controllable`,`DataTypeRef`,`Description`)
+		VALUES (`DeviceID_in`,`Name_in`, `Controllable_in`,`DataType_in`, `Description_in`);
+
+	-- Return
+	SELECT `Id`,`DeviceRef`,`DatafieldName`,`Controllable`,`DataTypeRef`,`Description`
+		FROM `DataField`
+		WHERE (`DeviceRef` = `DeviceID_in`) AND (`DatafieldName` = `Name_in`);
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DataField_List_S` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DataField_List_S`(
+	IN `DeviceID_in`	INTEGER
+
+-- Returns (Multi-row return):
+-- 	`Id`			<int>
+-- 	`DeviceRef`		<int>
+-- 	`DatafieldName`	<string>
+-- 	`Controllable`	<bool?>
+-- 	`DataTypeRef`	<int>
+-- 	`Description`	<string>
+)
+BEGIN
+
+	-- Return
+	SELECT `Id`,`DeviceRef`,`DatafieldName`,`Controllable`,`DataTypeRef`,`Description`
+		FROM `DataField`
+		WHERE (`DeviceRef` = `DeviceID_in`);
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DataType_Add_I` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DataType_Add_I`(
+	IN Name_in	VARCHAR(20),
+    IN Description_in VARCHAR(128) -- Optional, can be NULL
+
+-- Returns (single-row return):
+-- `Id`				<int>	Newly created ID
+-- `TypeName`		<string>
+-- `Description`	<string>
+)
+BEGIN
+
+	-- input paramets handling
+	IF `Description_in` IS NULL THEN
+		SET `Description_in` = "";
+	END IF;
+
+	-- Insert
+	INSERT INTO `DataType`(`TypeName`,`Description`)
+		VALUES (`Name_in`, `Description_in`);
+
+	-- Return
+	SELECT `Id`,`TypeName`,`Description`
+		FROM `DataType`
+		WHERE (`TypeName` = `Name_in`);
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DataType_List_S` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DataType_List_S`(
+	-- No parameters
+	
+
+-- Returns (Multi-row return):
+-- `Id`				<int>	Newly created ID
+-- `TypeName`		<string>
+-- `Description`	<string>
+)
+BEGIN
+
+	-- Return
+	SELECT `Id`,`TypeName`,`Description`
+		FROM `DataType`;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `Device_Add_I` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Device_Add_I`(
+	IN `UserID_in`		INTEGER,
+    IN `Name_in`		VARCHAR(20),
+    IN `Location_in`	INTEGER,
+    IN `Parent_in`		INTEGER,	-- Can be NULL. But NULL mean it's
+                  		        	-- 	a mother device.
+    IN `Description_in` VARCHAR(50) -- Optional, can be NULL
+
+-- Returns (single-row return):
+-- `Id`				<int>	Newly created ID.
+-- `OwnerRef`		<int>
+-- `Name`			<string>
+-- `LocationRef`	<int>
+-- `Parent`			<int>
+-- `Description`	<string>
+)
+BEGIN
+	-- input paramets handling
+	IF `Description_in` IS NULL THEN
+		SET `Description_in` = "";
+	END IF;
+    
+    -- then insert
+	INSERT INTO `Device`(`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`)
+		VALUES (`UserID_in`,`Name_in`,`Location_in`,`Parent_in`,`Description_in`);
+
+	-- return
+	SELECT `Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`
+		FROM `Device`
+		WHERE (`OwnerRef` = `UserID_in`) AND (`Name` = `Name_in`);
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `Device_List_S` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Device_List_S`(
+	IN `UserID_in`		INTEGER,
+    IN `LocationID_in`	INTEGER,		-- Optional. Input NULL if not needed
+    IN `ParentID_in`	INTEGER			-- Optional. Input NULL if you want to
+                    	       			-- 		See a full list tree.-- Returns (single-row return):
+
+-- Returns (Multi-row return):
+-- `Id`				<int>
+-- `OwnerRef`		<int>
+-- `Name`			<string>
+-- `LocationRef`	<int>
+-- `Parent`			<int>
+-- `Description`	<string>
+)
+BEGIN
+
+	-- Return
+	SELECT `Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`
+		FROM `Device`
+		WHERE 	(`OwnerRef` = `UserID_in`)
+			AND ((`LocationRef` = `LocationID_in`) OR (`LocationID_in` IS NULL))
+            AND ((`Parent` = `ParentID_in`) OR (`ParentID_IN` IS NULL));
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `Location_Add_I` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Location_Add_I`(
+	IN `UserID_in`		INTEGER,		-- It is integer UserID
+    IN `Name_in`		VARCHAR(20),
+    IN `Parent_in` 		INTEGER,		-- Can be NULL but NULL means the
+                   		        		-- 		location is a mother location
+    IN `Description_in`	VARCHAR(50)		-- Optional, can be NULL
+
+-- Returns (single-row return):
+-- 	`Id`			<int>	Created Location Id
+-- 	`UserRef`		<int>	The rest of parameters should be the same as input
+-- 	`Name`			<string>
+-- 	`Description`	<string>
+-- 	`Parent`		<int>
+)
+BEGIN
+	-- input paramets handling
+	IF `Description_in` IS NULL THEN
+		SET `Description_in` = "";
+	END IF;
+    
+    -- then insert
+	INSERT INTO `Location`(`UserRef`, `Name`,`Description`,`Parent`)
+		VALUES (`UserID_in`, `Name_in`, `Description_in`, `Parent_in`);
+
+	-- return
+	SELECT `Id`,`UserRef`,`Name`,`Description`,`Parent`
+		FROM `Location`
+		WHERE `UserRef` = `UserID_in` AND `Name` = `Name_in`;
+	
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `User_Add_I` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `User_Add_I`(
+	IN UserName_in	VARCHAR(30),
+    IN Password_in	VARCHAR(50),
+    IN Email_in		VARCHAR(40)
+
+-- Returns (single-row return):
+-- 	`Id`		<int>		Created User Id (Note that Id is not UserName)
+-- 	`UserName`	<string>
+-- 	`Email`		<string>
+)
+BEGIN
+-- Declare id and salt
+DECLARE id_generated INTEGER;
+DECLARE salt CHAR(8);
+
+-- Declare handlers
+-- Error diagnostics from http://dev.mysql.com/doc/refman/5.6/en/get-diagnostics.html
+-- RESIGNAL from https://dev.mysql.com/doc/refman/5.7/en/resignal.html
+DECLARE `code` CHAR(5) DEFAULT '00000';
+DECLARE `msg` TEXT;
+
+DECLARE exit handler FOR sqlexception
+	BEGIN
+		-- ERROR
+        GET DIAGNOSTICS CONDITION 1
+        `code` = RETURNED_SQLSTATE, `msg` = MESSAGE_TEXT;
+		ROLLBACK;
+        SET `msg` = CONCAT("Creating user failed. Code: ", `code`, ". ", `msg`);
+        RESIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = `msg`;
+	END;
+ 
+DECLARE exit handler FOR sqlwarning
+	BEGIN
+		-- WARNING
+        GET DIAGNOSTICS CONDITION 1
+        `code` = RETURNED_SQLSTATE, `msg` = MESSAGE_TEXT;
+		ROLLBACK;
+        SET `msg` = CONCAT("Creating user warning. Code: ", `code`, ". ", `msg`);
+        RESIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = `msg`;
+	END;
+
+-- Start
+START TRANSACTION;
+
+	-- Set salt
+	SET salt = SUBSTRING(MD5(RAND()),-8);
+
+	-- First just put the username and email and salt
+	INSERT INTO `User` (`UserName`, `Password`, `Email`, `PassSalt`)
+		VALUES (`UserName_in`, "", `Email_in`, salt);
+
+	SET id_generated = (SELECT `Id` FROM `User` WHERE `UserName` = `UserName_in`);
+
+	-- put hash
+	UPDATE `User`
+		SET `Password` = SHA2(CONCAT(salt,`Password_in`),512)
+		WHERE `Id` = id_generated;
+    
+	-- And then login test
+	IF EXISTS (SELECT `Id` FROM `User` 
+					WHERE 	(`UserName` = `UserName_in`)
+					AND (`Id` = id_generated)
+					AND (`Password` = SHA2(CONCAT(salt,`Password_in`),512))
+			) THEN
+		SELECT `Id`, `UserName`, `Email` FROM `User` WHERE (`UserName` = `UserName_in`);
+	ELSE
+		-- Rise error
+		-- for SIGNAL Sytax, see http://dev.mysql.com/doc/refman/5.6/en/signal.html
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An login test error occurred', MYSQL_ERRNO = 1001;
+	END IF;
+    
+COMMIT;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `User_Login_S` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `User_Login_S`(
+	IN UserName_in	VARCHAR(30),
+    IN Password_in	VARCHAR(50)
+
+-- Returns (single-row return):
+-- 	`Id`		<int>		Created User Id (Note that Id is not UserName)
+-- 	`UserName`	<string>
+-- 	`Email`		<string>
+)
+BEGIN
+-- Declare id and salt
+DECLARE user_id INTEGER;
+DECLARE salt CHAR(8);
+
+SELECT `Id`, `PassSalt`
+	INTO user_id, salt
+	FROM `User`
+    WHERE `UserName` = `UserName_in`;
+
+IF user_id IS NULL THEN
+	-- Rise error
+	-- for SIGNAL Sytax, see http://dev.mysql.com/doc/refman/5.6/en/signal.html
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No such user', MYSQL_ERRNO = 1001;
+END IF;
+
+-- Subqueries with EXISTS
+-- See http://dev.mysql.com/doc/refman/5.7/en/exists-and-not-exists-subqueries.html
+-- FIXME: Rise error if the password is wrong
+SELECT `Id`, `UserName`, `Email`
+	FROM `User`
+	WHERE 	(`UserName` = `UserName_in`)
+		AND (`Password` = SHA2(CONCAT(salt,`Password_in`),512));
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -244,4 +673,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-25 12:10:02
+-- Dump completed on 2016-09-05 16:49:56

@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+
 class Device(models.Model):
     uid = models.AutoField(db_column='Id', primary_key=True)  
     name = models.CharField(db_column='Name', max_length=20)  
@@ -21,13 +22,13 @@ class Device(models.Model):
     parent = models.ForeignKey('self', models.DO_NOTHING, db_column='Parent', blank=True, null=True)  
 
     class Meta:
+        managed = False
         db_table = 'Device'
-        unique_together = (('ownerref', 'name'),)
+        unique_together = (('owner', 'name'),)
 
-
-class DataField(models.Model):
+class Datafield(models.Model):
     uid = models.AutoField(db_column='Id', primary_key=True)  
-    dataFieldName = models.CharField(db_column='DatafieldName', max_length=10)  
+    dataFieldName = models.CharField(db_column='DatafieldName', max_length=16)  
     controllable = models.IntegerField(db_column='Controllable')  
     description = models.CharField(db_column='Description', max_length=50)  
     createdTime = models.DateTimeField(db_column='CreatedTime')  
@@ -37,11 +38,12 @@ class DataField(models.Model):
     dataType = models.ForeignKey('DataType', models.DO_NOTHING, db_column='DataTypeRef')  
 
     class Meta:
+        managed = False
         db_table = 'DataField'
-        unique_together = (('deviceref', 'datafieldname'),)
+        unique_together = (('device', 'dataFieldName'),)
 
 
-class DataRecord(models.Model):
+class Datarecord(models.Model):
     uid = models.BigAutoField(db_column='Idx', primary_key=True)  
     createdtime = models.DateTimeField(db_column='CreatedTime')
     
@@ -49,10 +51,11 @@ class DataRecord(models.Model):
     location = models.ForeignKey('Location', models.DO_NOTHING, db_column='LocationRef', blank=True, null=True)  
 
     class Meta:
+        managed = False
         db_table = 'DataRecord'
 
 
-class DataType(models.Model):
+class Datatype(models.Model):
     uid = models.AutoField(db_column='Id', primary_key=True)  
     typeName = models.CharField(db_column='TypeName', unique=True, max_length=20)  
     description = models.CharField(db_column='Description', max_length=128)  
@@ -60,9 +63,8 @@ class DataType(models.Model):
     modifiedTime = models.DateTimeField(db_column='ModifiedTime')  
 
     class Meta:
+        managed = False
         db_table = 'DataType'
-
-
 
 
 class Location(models.Model):
@@ -76,19 +78,20 @@ class Location(models.Model):
     parent = models.ForeignKey('self', models.DO_NOTHING, db_column='Parent', blank=True, null=True)  
 
     class Meta:
+        managed = False
         db_table = 'Location'
-        unique_together = (('userref', 'name'),)
+        unique_together = (('user', 'name'),)
 
 
 class RecordFieldValue(models.Model):
-    idx = models.BigAutoField(db_column='Idx', primary_key=True)  
-    value = models.CharField(db_column='Value', max_length=30)  
+    idx = models.BigAutoField(db_column='Idx', primary_key=True)
+    value = models.CharField(db_column='Value', max_length=30)
 
-    dataFieldName = models.ForeignKey('DataField', models.DO_NOTHING, db_column='DataFieldNameRef')  
-    record = models.ForeignKey('DataRecord', models.DO_NOTHING, db_column='RecordRef')  
-    device = models.ForeignKey('DataField', models.DO_NOTHING, db_column='DeviceRef', blank=True, null=True)  
-
+    record = models.ForeignKey('DataRecord', models.DO_NOTHING, db_column='RecordRef')
+    dataField = models.ForeignKey(Datafield, models.DO_NOTHING, db_column='DataFieldRef')
+    
     class Meta:
+        managed = False
         db_table = 'RecordFieldValue'
 
 
@@ -102,14 +105,5 @@ class User(models.Model):
     modifiedTime = models.DateTimeField(db_column='ModifiedTime')  
 
     class Meta:
-        db_table = 'User'
-
-
-class DjangoMigrations(models.Model):
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
         managed = False
-        db_table = 'django_migrations'
+        db_table = 'User'

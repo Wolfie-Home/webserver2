@@ -1,2 +1,2 @@
 !# /bin/bash
-mysqldump -u wolfie -pdummypass wolfie_home > 'DB.mysql'
+mysqldump --events --routines --triggers -u wolfie -pdummypass wolfie_home > 'DB.mysql'
