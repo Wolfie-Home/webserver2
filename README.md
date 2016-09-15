@@ -18,7 +18,8 @@ $ sudo pip3 install Flask
 
 ### database
 ``` shell
-$ python3 tools/db_clean_tables.py
+$ cd tools  # user must run tools program in the directory.
+$ python3 db_clean_tables.py
 
 ```
 

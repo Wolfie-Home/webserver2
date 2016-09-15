@@ -7,40 +7,40 @@ class User:
         just make all attributes to NULL.
         """
         self.id = None          # integer, unique
-        self.user_name = None   # string, unique
+        self.username = None   # string, unique
         self.password = None    # string
         self.email = None       # string
         pass
 
     @classmethod
-    def create(cls, user_name, password, email):
+    def create(cls, username, password, email):
         """
         Create an user into DB.
-        :param user_name: username to create
+        :param username: username to create
         :param password: password
         :param email: email
         :return: new User object without password
         """
-        result = UserSvc.create(user_name, password, email)
+        result = UserSvc.create(username, password, email)
         # construct a new object
         new = cls()
         new.id = result['Id']
-        new.user_name = result['UserName']
+        new.username = result['UserName']
         new.email = result['Email']
         return new
 
     @classmethod
-    def login(cls, user_name, password):
+    def login(cls, username, password):
         """
         lookup user.
-        :param user_name: username to lookup
+        :param username: username to lookup
         :param password: password
         :return: new User object without password
         """
-        result = UserSvc.login(user_name, password)
+        result = UserSvc.login(username, password)
         # construct a new object
         new = cls()
         new.id = result['Id']
-        new.user_name = result['UserName']
+        new.username = result['UserName']
         new.email = result['Email']
         return new

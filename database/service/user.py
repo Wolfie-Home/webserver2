@@ -5,10 +5,10 @@ import random
 import string
 
 
-def create(user_name, password, email):
+def create(username, password, email):
     """
     Create a new user. Password is stored salted SHA-512 hashed
-    :param user_name: user name
+    :param username: user name
     :param password: password to input
     :param email: email address
     :return: sqlite3 row object. key = ('Id', 'UserName', 'Email')
@@ -23,10 +23,10 @@ def create(user_name, password, email):
     # First just put the username and email and salt
     cur.execute(' \
             INSERT INTO `User` (`UserName`, `Password`, `Email`, `PassSalt`) \
-            VALUES (?, "", ?, ?)', (user_name, email, salt))
+            VALUES (?, "", ?, ?)', (username, email, salt))
 
     # then get a generated id
-    cur.execute('SELECT `Id` FROM `User` WHERE `UserName` = ?', (user_name,))
+    cur.execute('SELECT `Id` FROM `User` WHERE `UserName` = ?', (username,))
     id = cur.fetchone()[0]
 
     # put password hash
@@ -41,17 +41,17 @@ def create(user_name, password, email):
             SELECT `Id`, `UserName`, `Email` \
               FROM `User` \
               WHERE (`UserName` = ?) \
-                AND (`Password` = ?)', (user_name, hashed_pass))
+                AND (`Password` = ?)', (username, hashed_pass))
     result = cur.fetchone()
 
     con.commit()
     return result
 
 
-def login(user_name, password):
+def login(username, password):
     """
     Login user
-    :param user_name: user name
+    :param username: user name
     :param password: password input
     :return: sqlite3 row object. key = ('Id', 'UserName', 'Email')
     """
@@ -63,7 +63,7 @@ def login(user_name, password):
     cur.execute(' \
         SELECT `Id`, `PassSalt` \
         FROM `User` \
-        WHERE `UserName` = ?', (user_name,))
+        WHERE `UserName` = ?', (username,))
     result = cur.fetchone()
     id = result['Id']
     salt = result['PassSalt']
@@ -76,7 +76,7 @@ def login(user_name, password):
         SELECT `Id`, `UserName`, `Email` \
             FROM `User` \
             WHERE (`UserName` = ?) \
-            AND (`Password` = ?)', (user_name, hashed_pass))
+            AND (`Password` = ?)', (username, hashed_pass))
     result = cur.fetchone()
 
     con.commit()

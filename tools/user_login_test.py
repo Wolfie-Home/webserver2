@@ -11,7 +11,7 @@ if __name__ == '__main__':
         print('user already exists...trying login anyway')
     else:
         print('user creation success!')
-        print(user.id, user.user_name, user.email, user.password)
+        print(user.id, user.username, user.email, user.password)
 
     try:
         user = User.login('kbumsik', 'dummypass')
@@ -19,5 +19,5 @@ if __name__ == '__main__':
         print('login failed')
     else:
         print('login success!')
-        print(user.id, user.user_name, user.email, user.password)
+        print(user.id, user.username, user.email, user.password)
     pass
