@@ -16,14 +16,11 @@ $ sudo pip3 install Flask
 
 ```
 
-### mysql settings
-``` SQL
-$ mysql -u root -p
-> CREATE DATABASE wolfie_home;
-> CREATE USER 'wolfie'@'localhost' IDENTIFIED BY 'dummypass';
-> GRANT ALL PRIVILEGES ON wolfie_home.* TO 'wolfie'@'localhost';
+### database
+``` shell
+$ python3 tools/db_clean_tables.py
+
 ```
-Then create tables. [See here.](https://github.com/Wolfie-Home/Documents/blob/bumsik/Design%20Document/Design_Document.md#51-mysql)
 
 ### Run
 ```
