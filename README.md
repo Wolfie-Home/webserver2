@@ -14,7 +14,7 @@ $ sudo apt-get install python3-pip
 $ sudo pip3 install uwsgi
 $ sudo pip3 install Flask
 
-# install sqlite3 command line tools, for windows user, go to Sqlite homepage
+# install sqlite3 command line tools, for Windows or Mac user, go to Sqlite homepage
 $ sudo apt-get install sqlite3
 ```
 
