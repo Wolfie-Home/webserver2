@@ -48,7 +48,7 @@ def create(username, password, email):
     return result
 
 
-def login(username, password):
+def verify(username, password):
     """
     Login user
     :param username: user name

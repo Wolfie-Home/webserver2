@@ -6,7 +6,7 @@ from database.models import User
 
 if __name__ == '__main__':
     try:
-        user = User.create('kbumsik', 'dummypass', 'kbumsik@gmail.com')
+        user = User.create('defaultUser', 'dummypassword', 'kbumsik@gmail.com')
     except Exception:
         print('user already exists...trying login anyway')
     else:
@@ -14,7 +14,7 @@ if __name__ == '__main__':
         print(user.id, user.username, user.email, user.password)
 
     try:
-        user = User.login('kbumsik', 'dummypass')
+        user = User.verify('defaultUser', 'dummypassword')
     except Exception:
         print('login failed')
     else:

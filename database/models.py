@@ -30,14 +30,14 @@ class User:
         return new
 
     @classmethod
-    def login(cls, username, password):
+    def verify(cls, username, password):
         """
         lookup user.
         :param username: username to lookup
         :param password: password
         :return: new User object without password
         """
-        result = UserSvc.login(username, password)
+        result = UserSvc.verify(username, password)
         # construct a new object
         new = cls()
         new.id = result['Id']

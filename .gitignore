@@ -4,3 +4,4 @@
 Makefile
 *.log
 wolfie_home/__pycache__
+.idea
