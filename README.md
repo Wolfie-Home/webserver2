@@ -20,7 +20,7 @@ $ sudo pip3 install Flask
 ``` shell
 $ cd tools  # user must run tools program in the directory.
 $ python3 db_clean_tables.py
-
+$ python3 db_user_login_test.py
 ```
 
 ### Run
