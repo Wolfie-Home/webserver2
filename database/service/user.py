@@ -4,6 +4,7 @@ from hashlib import sha512
 import random
 import string
 from database.service.exceptions import AlreadyExistsError, NoRecordError, UnknownError
+from database.service.exceptions import assert_NoRecord
 
 
 def create(username, password, email):
@@ -43,8 +44,8 @@ def create(username, password, email):
         except sqlite3.IntegrityError:
             con.rollback()
             raise AlreadyExistsError("Username already exists")
-        except:
-            raise UnknownError("Unknown DB error")
+        except Exception as e:
+            raise UnknownError(e)
         else:
             result = cur.fetchone()
         con.commit()
@@ -69,16 +70,14 @@ def verify(username, password):
                 SELECT `Id`, `PassSalt` \
                 FROM `User` \
                 WHERE `UserName` = ?', (username,))
-        except:
-            raise UnknownError("Unknown DB error")
+        except Exception as e:
+            raise UnknownError(e)
         result = cur.fetchone()
-        if result is None:
-            raise NoRecordError("Username does not exist.")
+        assert_NoRecord(result, "Username does not exist.")
 
-        idx = result['Id']
         salt = result['PassSalt']
 
-        # create hash
+        # create salted hash
         hashed_pass = sha512((salt + password).encode()).hexdigest()
 
         try:
@@ -88,10 +87,9 @@ def verify(username, password):
                     FROM `User` \
                     WHERE (`UserName` = ?) \
                     AND (`Password` = ?)', (username, hashed_pass))
-        except:
-            raise UnknownError("Unknown DB error")
+        except Exception as e:
+            raise UnknownError(e)
 
         result = cur.fetchone()
-        if result is None:
-            raise NoRecordError("Password does not match")
+        assert_NoRecord(result, "Password does not match")
     return result

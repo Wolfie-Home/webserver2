@@ -9,14 +9,29 @@ webapi = Blueprint('web_api', __name__, template_folder='templates')
 
 @webapi.route('/api/login', methods=['POST'])
 def login():
+    """
+    Try login
+    """
     content = request.form
+    # parameters
+    username = content.get('username')
+    password = content.get("password")
+    try:
+        """
+        Parameters requirements are here
+        """
+        assert((type(username) is str) and (len(username) < 30))
+        assert((type(password) is str) and (len(password) < 30))
+    except Exception:
+        return response_json_error({}, "Wrong parameter")
+
     # verify from db
     try:
-        user = User.verify(content['username'], content['password'])
+        user = User.verify(username, password)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
 
-    if user.username != content['username']:
+    if user.username != username:
         return response_json_error({}, "Unknown Error")
     session['username'] = user.username
     session['user_id'] = user.id
@@ -26,6 +41,18 @@ def login():
 
 @webapi.route('/api/logout', methods=['POST'])
 def logout():
+    """
+    Try logout
+    """
+    # No parameters, only session is required
+    try:
+        """
+        Parameters requirements are here
+        """
+        pass    # No parameters needed
+    except Exception:
+        return response_json_error({}, "Wrong parameter")
+
     # remove the username and id from the session if it's there
     user = session.pop('username', None)
     user_id = session.pop('user_idx', None)
