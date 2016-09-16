@@ -8,10 +8,14 @@ $(document).ready(function() {
             var username = $('#username').val();
             var password = $('#password').val();
             var req = {'username': username, 'password': password };
-            $.post('/api/login', req).always(function(jqxhr, status) {
-                if (status == "success") {
+            $.post('/api/login', req).always(function(jqxhr, textstatus) {
+                if (textstatus == "success") {
+                    $('#msg').text(jqxhr["msg"])
                     // how it is time go to the house page
                     window.location.replace('/index');
+                }
+                else if (textstatus == "error") {
+                    $('#errmsg').text(jqxhr.responseJSON["errmsg"])
                 }
             });
         });
@@ -22,6 +26,7 @@ $(document).ready(function() {
         logout_btn.click(function(event) {
             $.post('/api/logout').always(function(jqxhr, status) {
                 if (status == "success") {
+                    $('#msg').text(jqxhr["msg"])
                     // how it is time go to the house page
                     window.location.replace('/');
                 }

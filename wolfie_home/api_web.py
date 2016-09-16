@@ -1,8 +1,8 @@
 from flask import Blueprint, request, session
-from flask import abort, Response
-import json
+from wolfie_home.common import response_json_ok, response_json_error
 
 from database.models import User
+from database.service.exceptions import NoRecordError
 
 webapi = Blueprint('web_api', __name__, template_folder='templates')
 
@@ -13,35 +13,24 @@ def login():
     # verify from db
     try:
         user = User.verify(content['username'], content['password'])
-    except:
-        abort(400)
-    if user.username != content['username']:
-        abort(400)
-    session['username'] = content['username']
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
 
-    # return json response
-    payload = json.dumps({'username': user.username})
-    response = Response(
-        response=payload,
-        status=200,
-        mimetype='application/json; charset=utf-8'
-    )
-    return response
+    if user.username != content['username']:
+        return response_json_error({}, "Unknown Error")
+    session['username'] = user.username
+    session['user_id'] = user.id
+
+    return response_json_ok({'username': user.username, 'user_id': user.id}, "Login successful.")
 
 
 @webapi.route('/api/logout', methods=['POST'])
 def logout():
-    # remove the username from the session if it's there
+    # remove the username and id from the session if it's there
     user = session.pop('username', None)
+    user_id = session.pop('user_idx', None)
 
-    # return json response
-    payload = json.dumps({'username': user})
-    response = Response(
-        response=payload,
-        status=200,
-        mimetype='application/json; charset=utf-8'
-    )
-    return response
+    return response_json_ok({'username': user}, "Logout successful.")
 
 
 """
