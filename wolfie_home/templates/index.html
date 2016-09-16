@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Wolfie Home</title>
+    <meta charset="UTF-8">
+    <title>Wolfie Home</title>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/user.js') }}"></script>
 </head>
 
-
 <body>
-<div>
-Hello, welcome to wolfie home!
-</div>
-
+    <div>
+        Hello, you are logged in. welcome to wolfie home!
+    </div>
+    <button id="logout_btn">logout</button>
+    <div id="msg"></div>
+    <div id="errmsg"></div>
 </body>
 </html>

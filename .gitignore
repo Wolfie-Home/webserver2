@@ -3,4 +3,5 @@
 *pyc
 Makefile
 *.log
-/static/
+wolfie_home/__pycache__
+.idea

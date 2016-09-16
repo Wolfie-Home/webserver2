@@ -1,48 +1,31 @@
 ### install dependancies
 
 ``` shell
-# install uwsgi
-$ pip install uwsgi
+# Update repo
+$ sudo apt-get update
 
-# install mysqlclient
-$ sudo apt-get install python-dev libmysqlclient-dev # Debian / Ubuntu
-$ sudo apt-get install python3-dev # debian / Ubuntu
-$ pip install mysqlclient
+# install nginx
+$ sudo apt-get install nginx
 
-# install mysql.connector python. 
-# See https://dev.mysql.com/doc/connector-python/en/connector-python-installation.html
-# download mysql-connector here: http://dev.mysql.com/downloads/connector/python/
-$ dpkg -i mysql-connector-python_2.1.3-1ubuntu15.04_all.deb
+# install pip3
+$ sudo apt-get install python3-pip
 
+# install uwsgi, Flask
+$ sudo pip3 install uwsgi
+$ sudo pip3 install Flask
 
-# install Django
-$ pip install Django
-
+# install sqlite3 command line tools, for Windows or Mac user, go to Sqlite homepage
+$ sudo apt-get install sqlite3
 ```
 
-### mysql settings
-``` SQL
-$ mysql -u root -p
-> CREATE DATABASE wolfie_home;
-> CREATE USER 'wolfie'@'localhost' IDENTIFIED BY 'dummypass';
-> GRANT ALL PRIVILEGES ON wolfie_home.* TO 'wolfie'@'localhost';
-```
-Then create tables. [See here.](https://github.com/Wolfie-Home/Documents/blob/bumsik/Design%20Document/Design_Document.md#51-mysql)
-
-
-### Before Running Django 
-Any changes to static files need to run following, in order to make it visible to the webserver
-```
-python manage.py collectstatic
+### database
+``` shell
+$ cd tools  # user must run tools program in the directory.
+$ python3 db_clean_tables.py
+$ python3 db_user_login_test.py
 ```
 
-### Run locally
+### Run
 ```
-python manage.py runserver
+python3 runserver.py
 ```
-### Run globally
-Allows computers from different IPs to issue HTTP request.
-```
-python manage.py runserver 0.0.0.0:8000
-```
-
