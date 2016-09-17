@@ -12,14 +12,13 @@ def login():
     """
     Try login
     """
-    content = request.form
-    # parameters
-    username = content.get('username')
-    password = content.get("password")
+    content = request.get_json()
     try:
         """
         Parameters requirements are here
         """
+        username = content.get('username')
+        password = content.get("password")
         assert((type(username) is str) and (len(username) < 30))
         assert((type(password) is str) and (len(password) < 30))
     except Exception:
@@ -31,12 +30,11 @@ def login():
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
 
-    if user.username != username:
-        return response_json_error({}, "Unknown Error")
     session['username'] = user.username
     session['user_id'] = user.id
 
-    return response_json_ok({'username': user.username, 'user_id': user.id}, "Login successful.")
+    return response_json_ok({'username': user.username,
+                             'user_id': user.id}, "Login successful.")
 
 
 @webapi.route('/api/logout', methods=['POST'])
@@ -44,12 +42,11 @@ def logout():
     """
     Try logout
     """
-    # No parameters, only session is required
     try:
         """
         Parameters requirements are here
         """
-        pass    # No parameters needed
+        pass    # No parameters, only session is required
     except Exception:
         return response_json_error({}, "Wrong parameter")
 
