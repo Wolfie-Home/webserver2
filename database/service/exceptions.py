@@ -34,6 +34,6 @@ class UnknownError(DBServiceError):
         self.message = 'Unknown service error: ' + str(message)
 
 
-def assert_NoRecord(expression, errmsg):
-    if expression is None:
+def assert_NoRecord(obj, errmsg):
+    if (obj is None) or (len(obj) == 0):
         raise NoRecordError(errmsg)
