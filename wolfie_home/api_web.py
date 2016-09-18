@@ -10,7 +10,6 @@ webapi = Blueprint('web_api', __name__, template_folder='templates')
 
 
 @webapi.route('/api/login', methods=['POST'])
-@login_required
 @request_content_json
 def login(content):
     """
