@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
-from database.models import User
+from database.model.user import User
 from database.service.exceptions import AlreadyExistsError, NoRecordError
 
 if __name__ == '__main__':

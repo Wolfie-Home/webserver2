@@ -6,7 +6,7 @@ if __name__ == "__main__":
     """
     HOW THIS PROGRAM WORK:
     each `curl` call runs on different process. So unlike web browser, it is basically dose not
-    share session between `curl` but there is a way around.
+    share session between `curl` requests but there is a way around.
     When login, HTTP response will contain a Set-Cookie header like this:
         Set-Cookie:session=<encoded session>; Path=/; HttpOnly
     We need to send this cookie with new curl request, using --cookie argument.
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     # Then curl again with session code
     command = """\
-        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/location
+        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/login
         """ % session_cookie
 
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)

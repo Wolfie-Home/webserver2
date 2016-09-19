@@ -1,10 +1,10 @@
 from flask import Blueprint, request, session
-from wolfie_home.common import response_json_ok, response_json_error
-from wolfie_home.common import request_content_json, login_required
 
-from database.models import User
-from database.models import Location
+from database.model.location import Location
+from database.model.user import User
 from database.service.exceptions import NoRecordError
+from wolfie_home.common import request_content_json, login_required
+from wolfie_home.common import response_json_ok, response_json_error
 
 webapi = Blueprint('web_api', __name__, template_folder='templates')
 
