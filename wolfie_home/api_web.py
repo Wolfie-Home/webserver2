@@ -94,7 +94,9 @@ def location_list():
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
     resp = dict()
-    resp['locations'] = locations
+    resp['locations'] = []
+    for obj in locations:
+        resp['locations'].append(dict(obj))
 
     return response_json_ok(resp, "Retrieve locations successful.")
 

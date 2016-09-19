@@ -13,6 +13,13 @@ class User:
         self.email = None       # string
         pass
 
+    def __iter__(self):
+        yield 'id',          self.id
+        yield 'username',        self.username
+        yield 'password',     self.password
+        yield 'email', self.email
+        pass
+
     def __str__(self):
         string = "User ID: " + str(self.id) + ", Name: " + str(self.username) + \
                     ", Email: " + str(self.email)
@@ -63,6 +70,14 @@ class Location:
         self.user_id = None         # integer, reference to User.id
         self.description = None     # string
         self.house_id = None        # integer, reference to self.id
+        pass
+
+    def __iter__(self):
+        yield 'id',          self.id
+        yield 'name',        self.name
+        yield 'user_id',     self.user_id
+        yield 'description', self.description
+        yield 'house_id',    self.house_id
         pass
 
     def __str__(self):
