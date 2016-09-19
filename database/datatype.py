@@ -8,7 +8,7 @@ class DataType:
     """
     This model is very different from others, because DataType model is singletone
     """
-    datatypes = []     # list of __Properties
+    datatypes = {}     # list of __Properties
     decode = {}
     encode = {}
     __updated = False
@@ -55,7 +55,8 @@ class DataType:
             for obj in result:
                 # update list
                 new = DataType.__Properties(obj['Id'], obj['TypeName'], obj['Description'])
-                DataType.datatypes.append(new)
+                DataType.datatypes[new.name] = new
+                DataType.datatypes[new.id] = new
                 # update encoder
                 DataType.encode[new.name] = getattr(datatype_functions, new.name + "_encode")
                 DataType.encode[new.id] = getattr(datatype_functions, new.name + "_encode")
