@@ -340,6 +340,7 @@ ReactDOM.render(
      locationStore={locationStore} />,
     document.getElementById('main')
 );
+$("#locationLink").addClass("active");
 
 
 

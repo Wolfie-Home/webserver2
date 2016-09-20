@@ -26,3 +26,7 @@ def home():
 @login_required_redirect
 def location():
     return render_template('location.html')
+
+@webpage.route('/test')
+def test():
+    return render_template('default_layout.html');

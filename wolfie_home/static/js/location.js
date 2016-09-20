@@ -339,4 +339,5 @@ WolfieHomeLocation.LocationView = React.createClass({
 var locationStore = new WolfieHomeLocation.LocationStore();
 ReactDOM.render(React.createElement(WolfieHomeLocation.LocationView, {
     locationStore: locationStore }), document.getElementById('main'));
+$("#locationLink").addClass("active");
 

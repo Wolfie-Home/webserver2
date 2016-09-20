@@ -1,37 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Wolfie Home</title>
-    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" 
-          href="{{ url_for('static', filename='css/libraries/bootstrap.min.css') }}">
-    <link rel="stylesheet" type="text/css" 
-          href="{{ url_for('static', filename='css/libraries/bootstrap-material-design.css') }}">
-    <link rel="stylesheet" type="text/css" 
-          href="{{ url_for('static', filename='css/libraries/ripples.css') }}">
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/jquery.min.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/material.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/ripples.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/react.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/react-dom.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/underscore.js') }}"></script>
-    <script type="text/javascript" 
-             src="{{ url_for('static', filename='js/libraries/async.js') }}"></script>
+{% extends "default_layout.html" %}
 
-</head>
-
-<body>
-    <div id="main">
-        null
-    </div>
-</body>
-
+{% block js_at_the_end %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/location.js') }}"></script>
-</html>
+{% endblock %}
+
