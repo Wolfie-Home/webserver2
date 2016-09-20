@@ -31,7 +31,16 @@ from functools import wraps
 from flask import request, session, redirect, url_for
 
 
-def login_required(f):
+def login_required_json(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('user_id', None) is None:
+            return response_json_error({}, "Login first")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def login_required_redirect(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get('user_id', None) is None:

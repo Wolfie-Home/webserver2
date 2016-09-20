@@ -3,7 +3,7 @@ from flask import Blueprint, request, session
 from database.model.location import Location
 from database.model.user import User
 from database.service.exceptions import NoRecordError
-from wolfie_home.common import request_content_json, login_required
+from wolfie_home.common import request_content_json, login_required_json
 from wolfie_home.common import response_json_ok, response_json_error
 
 webapi = Blueprint('web_api', __name__, template_folder='templates')
@@ -43,7 +43,7 @@ def login(content):
 
 
 @webapi.route('/api/logout', methods=['POST'])
-@login_required
+@login_required_json
 def logout():
     """
     Try logout
@@ -58,7 +58,7 @@ def logout():
 
     # remove the username and id from the session if it's there
     user = session.pop('username', None)
-    user_id = session.pop('user_idx', None)
+    user_id = session.pop('user_id', None)
     session.pop('last_login', None)
     session.pop('email', None)
 
@@ -66,7 +66,7 @@ def logout():
 
 
 @webapi.route('/api/login', methods=['GET'])
-@login_required
+@login_required_json
 def current_user():
     """
     Get current user session
@@ -81,7 +81,7 @@ def current_user():
 
 
 @webapi.route('/api/location', methods=['GET'])
-@login_required
+@login_required_json
 def location_list():
     """
     get list of locations
