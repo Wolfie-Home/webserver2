@@ -1,10 +1,59 @@
 'use strict';
 
+var ReactStore = function () {
+    this._callbacks = {};
+};
+ReactStore.prototype._nop = function () {
+    return;
+};
+// @cb, callback
+// @event, string
+// @return, a index
+ReactStore.prototype._registerCallback = function (cb, event) {
+    if (!this._callbacks[event]) {
+        this._callbacks[event] = [];
+    }
+    this._callbacks[event].push(cb);
+    return this._callbacks[event].length - 1;
+};
+// @index, from @return of registerCallback
+// @event, string
+ReactStore.prototype._unregisterCallback = function (index, event) {
+    if (this._callbacks[event] != undefined && index >= 0 && index < this._callbacks[event].length) {
+        this._callbacks[event][index] = this._nop;
+    }
+};
+ReactStore.prototype._notifyCallbacks = function (event) {
+    if (this._callbacks[event] != undefined) {
+        async.each(this._callbacks[event], function (callback) {
+            callback();
+        });
+    }
+};
+
+var ReactStoreTest = function () {
+    window.s = s;
+    var s = new ReactStore();
+    var dummyEvent = 'dummyEvent';
+    s._registerCallback(function () {
+        console.log('ReactStoreTest callback invoked.');
+    }, dummyEvent);
+    s._notifyCallbacks(dummyEvent);
+    s._unregisterCallback(0, 'dummyEvent');
+    console.log('unregisterCallback.');
+    s._notifyCallbacks(dummyEvent);
+};
+
+/************/
+
 window.WolfieHomeLocation = window.WolfieHomeLocation || {};
 
 WolfieHomeLocation.LocationStore = function () {
+    ReactStore.call(this);
+
+    this._updateEvent = '1';
     this._locations = null;
-    this._ready = false;
+    this._changeCallbacks = [];
     this._url = '/api/location';
     $.ajax(this._url, {
         'context': this,
@@ -13,7 +62,7 @@ WolfieHomeLocation.LocationStore = function () {
     }).done(function (data, textStatus, jqxhr) {
         if (jqxhr.status == 200) {
             this._locations = data['locations'];
-            this._ready = true;
+            this._notifyCallbacks(this._updateEvent);
             console.log('LocationStore get data successfully');
         } else {
             console.log('LocationStore fail to get data');
@@ -61,7 +110,8 @@ WolfieHomeLocation.LocationStore = function () {
     // ];
 };
 // @return, a data structure that is compatible with LocationView
-//   state['data'].
+//   state['data']. on no data, return null.
+WolfieHomeLocation.LocationStore.prototype = Object.assign({}, ReactStore.prototype);
 WolfieHomeLocation.LocationStore.prototype.getHouse = function () {
     if (this._locations != null) {
         // finding out all houses
@@ -84,10 +134,15 @@ WolfieHomeLocation.LocationStore.prototype.getHouse = function () {
             house['list'] = rooms;
         }, this);
         return houses;
+    } else {
+        return null;
     }
 };
-WolfieHomeLocation.LocationStore.prototype.isReady = function () {
-    return this._ready;
+WolfieHomeLocation.LocationStore.prototype.registerUpdateCallback = function (cb) {
+    return this._registerCallback(cb, this._updateEvent);
+};
+WolfieHomeLocation.LocationStore.prototype.unregisterUpdateCallback = function (index) {
+    this._registerCallback(index, this._updateEvent);
 };
 
 WolfieHomeLocation.locationStoreTest = function () {
@@ -136,32 +191,39 @@ WolfieHomeLocation.LocationView = React.createClass({
     displayName: 'LocationView',
 
     getInitialState: function () {
+        var locationStore = this.props['locationStore'];
+        var house = locationStore.getHouse();
+        var list = house == null ? {} : house;
+        // wrap it
+        list = [{
+            'name': "user's house",
+            'list': list
+        }];
         return {
-            'path': ['sushi paradise'],
-            'button': 'Create',
-            'data': [{
-                'name': 'sushi paradise',
-                'list': [{
-                    'name': 'sushi',
-                    'list': [{
-                        'name': 'cali roll',
-                        'list': null
-                    }, {
-                        'name': 'boston roll',
-                        'list': null
-                    }]
-                }, {
-                    'name': 'spicy food',
-                    'list': [{
-                        'name': 'thai',
-                        'list': null
-                    }, {
-                        'name': 'szuan',
-                        'list': null
-                    }]
-                }]
-            }]
+            'path': ["user's house"],
+            'data': list
         };
+    },
+
+    componentDidMount: function () {
+        this._listUpdateIndex = this.props['locationStore'].registerUpdateCallback(this.listUpdate);
+    },
+
+    componentWillUnmount: function () {
+        this.props['locationStore'].unregisterUpdateCallback(this._listUpdateIndex);
+    },
+
+    listUpdate: function () {
+        var list = this.props['locationStore'].getHouse();
+        // wrap it
+        list = [{
+            'name': "user's house",
+            'list': list
+        }];
+        this.setState({
+            'path': ["user's house"],
+            'data': list
+        });
     },
 
     setPath: function (newPath) {
@@ -178,10 +240,6 @@ WolfieHomeLocation.LocationView = React.createClass({
         var path = this.state.path.slice();
         path.push(listElm.name);
         this.setPath(path);
-    },
-
-    clickOnButton: function () {
-        // TODO
     },
 
     render: function () {
@@ -268,23 +326,17 @@ WolfieHomeLocation.LocationView = React.createClass({
             listUi
         );
 
-        // button 
-        var buttonUi = React.createElement(
-            'button',
-            { className: 'btn btn-primary', style: { 'margin-top': '10px' } },
-            buttonName
-        );
-
         return React.createElement(
             'div',
             { className: 'container' },
             breadcrumbUi,
-            listUiContainer,
-            buttonUi
+            listUiContainer
         );
     }
 
 });
 
-ReactDOM.render(React.createElement(WolfieHomeLocation.LocationView, null), document.getElementById('main'));
+var locationStore = new WolfieHomeLocation.LocationStore();
+ReactDOM.render(React.createElement(WolfieHomeLocation.LocationView, {
+    locationStore: locationStore }), document.getElementById('main'));
 
