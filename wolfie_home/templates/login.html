@@ -4,17 +4,57 @@
     <meta charset="UTF-8">
     <title>Wolfie Home</title>
     <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" 
+          href="{{ url_for('static', filename='css/libraries/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" 
+          href="{{ url_for('static', filename='css/libraries/bootstrap-material-design.css') }}">
+    <link rel="stylesheet" type="text/css" 
+          href="{{ url_for('static', filename='css/libraries/ripples.css') }}">
+    <script type="text/javascript" 
+             src="{{ url_for('static', filename='js/libraries/jquery.min.js') }}"></script>
+    <script type="text/javascript" 
+             src="{{ url_for('static', filename='js/libraries/material.js') }}"></script>
+    <script type="text/javascript" 
+             src="{{ url_for('static', filename='js/libraries/ripples.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/user.js') }}"></script>
 </head>
 
 <body>
+
+<div class="well bs-component">
+    <form class="form-horizontal">
+        <fieldset>
+                <div class="form-group is-empty">
+                    <label for="username" class="col-md-2 control-label">Username</label>
+
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="username" placeholder="">
+                    </div>
+              </div>
+
+            <div class="form-group is-empty">
+                <label for="password" class="col-md-2 control-label">Password</label>
+                    <div class="col-md-10">
+                        <input type="password" class="form-control" id="password" placeholder="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-10 col-md-offset-2">
+                        <button id="login_btn" type="button" class="btn btn-primary">login</button>
+                    </div>
+                </div>
+            </fieldset>
+          </form>
+  
+<!-- 
     <form>
         username: <br>
         <input id="username" type="text" name="username"><br>
         password: <br>
         <input id="password" type="password" name="password"><br>
         <button id="login_btn" type="button">login</button>
-    </form>
+    </form> -->
     <div id="msg"></div>
     <div id="errmsg"></div>
 </body>
