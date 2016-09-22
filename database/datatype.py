@@ -1,6 +1,6 @@
 from database.settings import singletone
 from database import datatype_functions
-from database.service import datatype as DataTypeSvc
+from database.service.datatype import DataType as DataTypeSvc
 
 
 @singletone
@@ -14,12 +14,13 @@ class DataType:
     __updated = False
 
     class __Properties:
-        def __init__(self, idx, name, description):
-            self.id = idx                   # integer, unique
-            self.name = name                # string
-            self.description = description  # string
+        def __init__(self, **kwargs):
+            self.id = kwargs['id']                    # integer, unique
+            self.name = kwargs['name']                # string
+            self.description = kwargs['description']  # string
 
     def __init__(self):
+        self.update()
         pass
 
     def __str__(self):
@@ -30,7 +31,8 @@ class DataType:
         DataType.update()
         return self
 
-    def create(self, name, description):
+    @classmethod
+    def create(cls, name, description):
         """
         Create a new location
         :param name: name of location
@@ -40,29 +42,29 @@ class DataType:
         :return: new Location instance.
         """
         DataTypeSvc.create(name, description)
-        DataType.__updated = False
-        DataType.update()
-        return self
+        cls.__updated = False
+        cls.update()
+        return cls
 
-    def update(self):
+    @classmethod
+    def update(cls):
         """
         Update singletone
         :return:
         """
-        if not DataType.__updated:
+        if not cls.__updated:
             result = DataTypeSvc.get_list()
-            # key = (`Id`,`UserRef`,`Name`,`Description`,`Parent`)
             for obj in result:
                 # update list
-                new = DataType.__Properties(obj['Id'], obj['TypeName'], obj['Description'])
-                DataType.datatypes[new.name] = new
-                DataType.datatypes[new.id] = new
+                new = cls.__Properties(**obj)
+                cls.datatypes[new.name] = new
+                cls.datatypes[new.id] = new
                 # update encoder
-                DataType.encode[new.name] = getattr(datatype_functions, new.name + "_encode")
-                DataType.encode[new.id] = getattr(datatype_functions, new.name + "_encode")
+                cls.encode[new.name] = getattr(datatype_functions, new.name + "_encode")
+                cls.encode[new.id] = getattr(datatype_functions, new.name + "_encode")
                 # update decoder
-                DataType.decode[new.name] = getattr(datatype_functions, new.name + "_decode")
-                DataType.decode[new.id] = getattr(datatype_functions, new.name + "_decode")
-            DataType.__updated = True
-        return self
+                cls.decode[new.name] = getattr(datatype_functions, new.name + "_decode")
+                cls.decode[new.id] = getattr(datatype_functions, new.name + "_decode")
+            cls.__updated = True
+        return cls
     pass

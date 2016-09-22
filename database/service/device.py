@@ -1,76 +1,151 @@
 from .. import settings
 import sqlite3
-from hashlib import sha512
-import random
-import string
-from database.service.exceptions import AlreadyExistsError, NoRecordError, UnknownError
-from database.service.exceptions import assert_NoRecord
+from database.datatype import DataType
+from database.service.exceptions import AlreadyExistsError, UnknownError, NullOrEmptyInputError
+from database.service.exceptions import assert_NoRecord, assert_NullOrEmptyInput
+from database.dao.device import Device as DeviceDao
+from database.dao.datafield import DataField as DataFieldDao
+from database.model.device import Device as DeviceModel
 
 
-def create(name, userid, locationid=None, parentid=None, description=''):
-    """
-    Create a new device into db.
-    :param name: Name of new device
-    :param userid: owner of this device
-    :param locationid: Location id where the device located
-    :param parentid: mother device id
-    :param description: description
-    :return: sqlite3 row object. key = (`Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`)
-    """
-    with sqlite3.connect(settings.db) as con:
-        con.row_factory = sqlite3.Row  # this make cursor dictionary
-        cur = con.cursor()
+class Device:
 
-        try:
-            # Insert
-            cur.execute(' \
-                      INSERT INTO `Device`(`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`) \
-                        VALUES (?,?,?,?,?)',
-                        (userid, name, locationid, parentid, description))
+    @classmethod
+    def create(cls, name, userid, datafield_list, location_id=None, mother_id=None, description=''):
+        """
+        Create a new device into db.
+        :param name: Name of new device
+        :param userid: owner of this device
+        :param location_id: Location id where the device located
+        :param mother_id: mother device id
+        :param description: description
+        :return: sqlite3 row object. key = (`Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description`)
+        """
+        assert_NullOrEmptyInput(datafield_list)
 
-            # Then get created object
-            cur.execute(' \
-                      SELECT `Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description` \
-                        FROM `Device` \
-                        WHERE (`OwnerRef` = ?) AND (`Name` = ?)', (userid, name))
-        except sqlite3.IntegrityError:
-            con.rollback()
-            raise AlreadyExistsError("Location name already exists.")
-        except Exception as e:
-            raise UnknownError(e)
-        else:
-            result = cur.fetchone()
-        con.commit()
+        with sqlite3.connect(settings.db) as con:
+            # get DAOs
+            dev_dao = DeviceDao(con)
+            df_dao = DataFieldDao(con)
 
-    return result
+            try:
+                # Insert
+                dev_dao.insert_single(name, userid, location_id, mother_id, description)
 
+                # Then get created object
+                result_dev = dev_dao.select_single(userid, name=name)
 
-def get(userid, idx=None, name=None, locationid=None, parentid=None):
-    """
-    Get one location or a list of locations
-    :param userid: Owner's id
-    :param idx: location's id. optional
-    :param parentid: Parent location id
-    :return: sqlite3 row list object. key = (`Id`,`UserRef`,`Name`,`Description`,`Parent`)
-    """
-    with sqlite3.connect(settings.db) as con:
-        con.row_factory = sqlite3.Row  # this make cursor dictionary
-        cur = con.cursor()
+                # Put datafields here
+                for obj in datafield_list:
+                    df = {}
+                    df["name"] = obj["name"]
+                    df["device_id"] = result_dev["id"]
+                    df["type_id"] = DataType.datatypes[obj["type"]].id
+                    df["controllable"] = obj["controllable"]
+                    df["description"] = obj["description"]
+                    df_dao.insert_single(**df)
+                    pass
 
-        try:
-            # get user
-            cur.execute(' \
-                SELECT `Id`,`OwnerRef`,`Name`,`LocationRef`,`Parent`,`Description` \
-                  FROM `Device` \
-                  WHERE (`OwnerRef` = ?) \
-                    AND ((`Id` = ?) OR (? IS NULL)) \
-                    AND ((`Name` = ?) OR (? IS NULL)) \
-                    AND ((`LocationRef` = ?) OR (? IS NULL)) \
-                    AND ((`Parent` = ?) OR (? IS NULL))',
-                        (userid, idx, idx, name, name, locationid, locationid, parentid, parentid))
-        except Exception as e:
-            raise UnknownError(e)
+                # Then get list of datafields
+                result_dfs = df_dao.select_multi(result_dev["id"])
 
-        result = cur.fetchall()
-        assert_NoRecord(result, "No device record with this criteria")
-    return result
+            except sqlite3.IntegrityError:
+                con.rollback()
+                raise AlreadyExistsError("Location name already exists.")
+            except KeyError as e:
+                con.rollback()
+                raise NullOrEmptyInputError("Datafield list format is incorrect.")
+            except Exception as e:
+                con.rollback()
+                raise UnknownError(e)
+            else:
+                con.commit()
+
+        device = DeviceModel(**result_dev)
+        for df in result_dfs:
+            device.parameters.append(DeviceModel.Parameter(**df))
+        return device
+
+    @classmethod
+    def get_device(cls, user_id, id=None, name=None):
+        """
+        Get one location or a list of locations
+        :param userid: Owner's id
+        :param idx: location's id. optional
+        :param parentid: Parent location id
+        :return: sqlite3 row list object. key = (`Id`,`UserRef`,`Name`,`Description`,`Parent`)
+        """
+
+        with sqlite3.connect(settings.db) as con:
+            # get DAOs
+            dev_dao = DeviceDao(con)
+
+            try:
+                # get user
+                result_dao = dev_dao.select_single(user_id, id, name)
+                pass
+            except Exception as e:
+                con.rollback()
+                raise UnknownError(e)
+
+            assert_NoRecord(result_dao, "No device record with this criteria")
+            result = DeviceModel(**result_dao)
+        return result
+
+    @classmethod
+    def get_device_list(cls, user_id, location_id=None, mother_id=None):
+        """
+        Get one location or a list of locations
+        :param userid: Owner's id
+        :param idx: location's id. optional
+        :param parentid: Parent location id
+        :return: sqlite3 row list object. key = (`Id`,`UserRef`,`Name`,`Description`,`Parent`)
+        """
+
+        with sqlite3.connect(settings.db) as con:
+            # get DAOs
+            dev_dao = DeviceDao(con)
+
+            try:
+                # get user
+                result_dao = dev_dao.select_multi(user_id, location_id, mother_id)
+                pass
+            except Exception as e:
+                con.rollback()
+                raise UnknownError(e)
+
+            assert_NoRecord(result_dao, "No device record with this criteria")
+            result = []
+            for obj in result_dao:
+                result.append(DeviceModel(**obj))
+        return result
+
+    @classmethod
+    def get_parameter_list(cls, user_id, device_id):
+        """
+        Get one location or a list of locations
+        :param userid: Owner's id
+        :param idx: location's id. optional
+        :param parentid: Parent location id
+        :return: sqlite3 row list object. key = (`Id`,`UserRef`,`Name`,`Description`,`Parent`)
+        """
+        # FIXME: The user_id parameter MUST used for query, for security
+        # FIXME: "Controllable" returns 1 or 0, not True/False
+        with sqlite3.connect(settings.db) as con:
+            # get DAOs
+            df_dao = DataFieldDao(con)
+
+            try:
+                # get user
+                result_dao = df_dao.select_multi(device_id)
+                pass
+            except Exception as e:
+                con.rollback()
+                raise UnknownError(e)
+
+            assert_NoRecord(result_dao, "No device record with this criteria")
+            result = []
+            for df in result_dao:
+                result.append(DeviceModel.Parameter(**df))
+        return result
+    pass

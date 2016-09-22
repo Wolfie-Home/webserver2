@@ -27,81 +27,81 @@ PRAGMA foreign_keys = ON;
 -- Note that INTEGER PRIMARY KEY in SQL automatically autoincrement.
 
 CREATE TABLE `User` (
-    `Id` INTEGER PRIMARY KEY,
-    `UserName` VARCHAR(30) NOT NULL,
-    `Password` CHAR(128) NOT NULL,
-    `Email` VARCHAR(40) NOT NULL DEFAULT "",
-    `PassSalt` CHAR(8) NOT NULL,
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ModifiedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (`UserName`)
+    `id` INTEGER PRIMARY KEY,
+    `username` VARCHAR(30) NOT NULL,
+    `password` CHAR(128) NOT NULL,
+    `email` VARCHAR(40) NOT NULL DEFAULT "",
+    `salt` CHAR(8) NOT NULL,
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (`username`)
 );
 
 CREATE TABLE `Location` (
-    `Id` INTEGER PRIMARY KEY,
-    `UserRef` UNSIGNED INTEGER NOT NULL,
-    `Name` VARCHAR(20) NOT NULL,
-    `Parent` UNSIGNED INTEGER,
-    `Description` VARCHAR(50) NOT NULL DEFAULT "",
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ModifiedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (`UserRef`, `Name`),
-    FOREIGN KEY (`UserRef`) REFERENCES `User`(`Id`),
-    FOREIGN KEY (`Parent`) REFERENCES `Location`(`Id`) ON DELETE SET NULL
+    `id` INTEGER PRIMARY KEY,
+    `user_id` UNSIGNED INTEGER NOT NULL,
+    `name` VARCHAR(20) NOT NULL,
+    `house_id` UNSIGNED INTEGER,
+    `description` VARCHAR(50) NOT NULL DEFAULT "",
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (`user_id`, `name`),
+    FOREIGN KEY (`user_id`) REFERENCES `User`(`id`),
+    FOREIGN KEY (`house_id`) REFERENCES `Location`(`id`) ON DELETE SET NULL
 );
 
 CREATE TABLE `Device` (
-    `Id` INTEGER PRIMARY KEY,
-    `OwnerRef` UNSIGNED INTEGER NOT NULL,
-    `Name` VARCHAR(20) NOT NULL,
-    `LocationRef` UNSIGNED INTEGER,
-    `Parent` UNSIGNED INTEGER,
-    `Description` VARCHAR(50) NOT NULL DEFAULT "",
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ModifiedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (`OwnerRef`, `Name`),
-    FOREIGN KEY (`OwnerRef`) REFERENCES `User`(`Id`),
-    FOREIGN KEY (`LocationRef`) REFERENCES `Location`(`Id`) ON DELETE  SET NULL,
-    FOREIGN KEY (`Parent`) REFERENCES `Device`(`Id`) ON DELETE SET NULL
+    `id` INTEGER PRIMARY KEY,
+    `user_id` UNSIGNED INTEGER NOT NULL,
+    `name` VARCHAR(20) NOT NULL,
+    `location_id` UNSIGNED INTEGER,
+    `mother_id` UNSIGNED INTEGER,
+    `description` VARCHAR(50) NOT NULL DEFAULT "",
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (`user_id`, `name`),
+    FOREIGN KEY (`user_id`) REFERENCES `User`(`id`),
+    FOREIGN KEY (`location_id`) REFERENCES `Location`(`id`) ON DELETE  SET NULL,
+    FOREIGN KEY (`mother_id`) REFERENCES `Device`(`id`) ON DELETE SET NULL
 );
 
 CREATE TABLE `DataType` (
-    `Id` INTEGER PRIMARY KEY,
-    `TypeName` VARCHAR(20) NOT NULL,
-    `Description` VARCHAR(128) NOT NULL DEFAULT "",
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ModifiedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (`TypeName`)
+    `id` INTEGER PRIMARY KEY,
+    `name` VARCHAR(20) NOT NULL,
+    `description` VARCHAR(128) NOT NULL DEFAULT "",
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (`name`)
 );
 
 CREATE TABLE `DataField` (
-    `Id` INTEGER PRIMARY KEY,
-    `DeviceRef` UNSIGNED INTEGER NOT NULL,
-    `DatafieldName` VARCHAR(16) NOT NULL,
-    `Controllable` BOOLEAN NOT NULL,
-    `DataTypeRef` UNSIGNED INTEGER NOT NULL,
-    `Description` VARCHAR(50) NOT NULL DEFAULT "",
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ModifiedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (`DeviceRef`, `DatafieldName`),
-    FOREIGN KEY (`DataTypeRef`) REFERENCES `DataType`(`Id`),
-    FOREIGN KEY (`DeviceRef`) REFERENCES `Device`(`OwnerRef`) ON DELETE CASCADE
+    `id` INTEGER PRIMARY KEY,
+    `device_id` UNSIGNED INTEGER NOT NULL,
+    `name` VARCHAR(16) NOT NULL,
+    `controllable` BOOLEAN NOT NULL,
+    `type_id` UNSIGNED INTEGER NOT NULL,
+    `description` VARCHAR(50) NOT NULL DEFAULT "",
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (`device_id`, `name`),
+    FOREIGN KEY (`type_id`) REFERENCES `DataType`(`id`),
+    FOREIGN KEY (`device_id`) REFERENCES `Device`(`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `DataRecord` (
-    `Id` INTEGER PRIMARY KEY ,
-    `DeviceRef` UNSIGNED INTEGER NOT NULL,
-    `LocationRef` UNSIGNED INTEGER,
-    `CreatedTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`LocationRef`) REFERENCES `Location`(`Id`),
-    FOREIGN KEY (`DeviceRef`) REFERENCES `Device`(`Id`)
+    `id` INTEGER PRIMARY KEY ,
+    `device_id` UNSIGNED INTEGER NOT NULL,
+    `location_id` UNSIGNED INTEGER,
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`location_id`) REFERENCES `Location`(`id`),
+    FOREIGN KEY (`device_id`) REFERENCES `Device`(`id`)
 );
 
 CREATE TABLE `RecordFieldValue` (
-    `Id` INTEGER PRIMARY KEY ,
-    `RecordRef` UNSIGNED BIGINT NOT NULL,
-    `DataFieldRef` UNSIGNED INTEGER NOT NULL,
-    `Value` VARCHAR(30) NOT NULL,
-    FOREIGN KEY (`RecordRef`) REFERENCES `DataRecord`(`Idx`) ON DELETE CASCADE,
-    FOREIGN KEY (`DataFieldRef`) REFERENCES `DataField`(`Id`)
+    `id` INTEGER PRIMARY KEY ,
+    `record_id` UNSIGNED BIGINT NOT NULL,
+    `datafield_id` UNSIGNED INTEGER NOT NULL,
+    `value` VARCHAR(30) NOT NULL,
+    FOREIGN KEY (`record_id`) REFERENCES `DataRecord`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`datafield_id`) REFERENCES `DataField`(`id`)
 );
