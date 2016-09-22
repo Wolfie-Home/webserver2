@@ -1,7 +1,8 @@
 from flask import Blueprint, request, session
 
-from database.model.location import Location
-from database.model.user import User
+from database.service.location import Location as LocationSvc
+from database.service.user import User as UserSvc
+from database.service.device import Device as DeviceSvc
 from database.service.exceptions import NoRecordError
 from wolfie_home.common import request_content_json, login_required_json
 from wolfie_home.common import response_json_ok, response_json_error
@@ -29,7 +30,7 @@ def login(content):
 
     # verify from db
     try:
-        user = User.verify(username, password)
+        user = UserSvc.verify(username, password)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
 
@@ -90,7 +91,7 @@ def location_list():
     user_id = session.get('user_id', None)
     # verify from db
     try:
-        locations = Location.get_list(user_id)
+        locations = LocationSvc.get_list(user_id)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
     resp = dict()
@@ -100,6 +101,119 @@ def location_list():
 
     return response_json_ok(resp, "Retrieve locations successful.")
 
+
+@webapi.route('/api/location/<int:id>', methods=['GET'])
+@login_required_json
+def location_detail(id):
+    """
+    get list of locations
+    """
+    # session variables required
+    user_id = session.get('user_id', None)
+
+    try:
+        location = LocationSvc.get(user_id, id=id)
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
+
+    try:
+        location.rooms = LocationSvc.get_list(user_id, house_id=id)
+    except NoRecordError:
+        # There is a case of no children rooms
+        location.rooms = []
+
+    resp = dict(location)
+
+    return response_json_ok(resp, "Retrieve the location successful.")
+
+
+@webapi.route('/api/location/<int:id>/device', methods=['GET'])
+@login_required_json
+def device_list_in_location(id):
+    """
+    get list of devices
+    """
+    # session variables required
+    user_id = session.get('user_id', None)
+    # verify from db
+    try:
+        devices = DeviceSvc.get_device_list(user_id, location_id=id)
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
+    resp = dict()
+    resp['devices'] = []
+    for obj in devices:
+        resp['devices'].append(dict(obj))
+
+    return response_json_ok(resp, "Retrieve devices successful.")
+
+
+@webapi.route('/api/device', methods=['GET'])
+@login_required_json
+def device_list():
+    """
+    get list of devices
+    """
+    # session variables required
+    user_id = session.get('user_id', None)
+    # verify from db
+    try:
+        devices = DeviceSvc.get_device_list(user_id)
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
+    resp = dict()
+    resp['devices'] = []
+    for obj in devices:
+        resp['devices'].append(dict(obj))
+
+    return response_json_ok(resp, "Retrieve devices successful.")
+
+
+@webapi.route('/api/device/<int:id>', methods=['GET'])
+@login_required_json
+def device_detail(id):
+    """
+    get list of devices
+    """
+    # session variables required
+    user_id = session.get('user_id', None)
+    try:
+        # Get devices
+        device = DeviceSvc.get_device(user_id, id=id)
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
+
+    try:
+        # Get children devices
+        device.children = DeviceSvc.get_device_list(user_id, mother_id=id)
+    except NoRecordError:
+        # There is a case of no children devices
+        device.children = []
+
+    resp = dict(device)
+
+    return response_json_ok(resp, "Retrieve devices successful.")
+
+
+@webapi.route('/api/device/<int:device_id>/parameter', methods=['GET'])
+@login_required_json
+def parameter_list(device_id):
+    """
+    get list of parameter of device
+    """
+    # session variables required
+    user_id = session.get('user_id', None)
+    # verify from db
+    try:
+        parameters = DeviceSvc.get_parameter_list(user_id, device_id)
+    except NoRecordError as error:
+        return response_json_error({}, str(error))  # Usually username password mismatch
+    resp = dict()
+    resp['parameters'] = []
+    for obj in parameters:
+        resp['parameters'].append(dict(obj))
+
+    return response_json_ok(resp, "Retrieve parameters successful.")
 
 """
 The following codes is used for debugging purpose.

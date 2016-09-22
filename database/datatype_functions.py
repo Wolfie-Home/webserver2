@@ -4,35 +4,35 @@ functions.
 """
 
 
-def int_encode(value):
+def integer_encode(value):
     return str(value)
 
 
-def int_decode(value):
+def integer_decode(value):
     return int(value)
 
 
-def float_encode(value):
+def number_encode(value):
     return '{:e}'.format(float(value))
 
 
-def float_decode(value):
+def number_decode(value):
     return float(value)
 
 
-def str_encode(value):
+def string_encode(value):
     return str(value)
 
 
-def str_decode(value):
+def string_decode(value):
     return str(value)
 
 
-def bool_encode(value):
+def boolean_encode(value):
     return str(value)
 
 
-def bool_decode(value):
+def boolean_decode(value):
     if value == 'False':
         return False
     elif value == 'True':

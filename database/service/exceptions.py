@@ -26,6 +26,14 @@ class NoRecordError(DBServiceError):
         self.message = str(message)
 
 
+class NullOrEmptyInputError(DBServiceError):
+    """
+    Input contains unacceptable Null
+    """
+    def __init__(self, message='Unacceptable Null or empty value found'):
+        self.message = str(message)
+
+
 class UnknownError(DBServiceError):
     """
     Unknown database error
@@ -36,4 +44,15 @@ class UnknownError(DBServiceError):
 
 def assert_NoRecord(obj, errmsg):
     if (obj is None) or (len(obj) == 0):
-        raise NoRecordError(errmsg)
+        if errmsg:
+            raise NoRecordError(errmsg)
+        else:
+            raise NoRecordError()
+
+
+def assert_NullOrEmptyInput(obj, errmsg=None):
+    if (obj is None) or (len(obj) == 0):
+        if errmsg:
+            raise NullOrEmptyInputError(errmsg)
+        else:
+            raise NullOrEmptyInputError()
