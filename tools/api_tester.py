@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     # Then curl again with session code
     command = """\
-        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/login
+        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/device
         """ % session_cookie
 
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
