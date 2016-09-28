@@ -30,3 +30,9 @@ $ python3 user_login_test.py
 ```
 python3 runserver.py
 ```
+
+### Run the server in background
+```
+chmod -x runserver.py
+nohup ./runserver.py > log.txt &
+```

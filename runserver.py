@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
 from flask import Flask
 from wolfie_home.webpages import webpage
 from wolfie_home.api_web import webapi
