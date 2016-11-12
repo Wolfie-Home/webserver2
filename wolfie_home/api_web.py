@@ -39,7 +39,7 @@ def login(content):
     session['email'] = user.email
     session['last_login'] = str(datetime.datetime.now())
 
-    return response_json_ok({'username': user.username,
+    return response_json_ok({'username': user.username, 'email': user.email,
                              'user_id': user.id}, "Login successful.")
 
 
