@@ -4,38 +4,6 @@ model.Device
 
 
 class Device:
-    class Parameter:
-        def __init__(self, **kwargs):
-            """
-            just make all attributes to NULL.
-            """
-            self.name = kwargs["name"]            # string
-            self.type = kwargs["type"]         # integer, reference to User.id
-            self.controllable = kwargs["controllable"]          # TODO: Implement device class
-            self.description = kwargs["description"]     # string
-            self.value = kwargs.get("value", None)        # integer, reference to self.id
-            self.time = kwargs.get("time", None)
-            self.values = []          # [] list
-            self.times = []           # [] list of timestamp
-            pass
-
-        def __iter__(self):
-            yield 'name',          self.name
-            yield 'type',          self.type
-            yield 'controllable',      self.controllable
-            yield 'description',   self.description
-            yield 'value',     self.value
-            yield 'time',      self.time
-            yield 'values',        self.values
-            yield 'times', self.times
-
-        def __str__(self):
-            string = "Name: " + str(self.name) + ", Type: " + str(self.type) + \
-                     ", Controllable: " + str(self.controllable) + \
-                     ", Description: " + str(self.description)
-            return string
-        pass
-
     def __init__(self, **kwargs):
         """
         just make all attributes to NULL.
@@ -48,7 +16,7 @@ class Device:
         self.mother_id = kwargs["mother_id"]            # integer, reference to self.id
         self.location = kwargs.get("location", None)
         self.location_id = kwargs["location_id"]
-        self.parameters = []
+        self.properties = []
         self.children = []
         pass
 
@@ -61,11 +29,11 @@ class Device:
         yield 'mother_id',     self.mother_id
         yield 'location',     self.location
         yield 'location_id', self.location_id
-        parameter_list = []
-        for param in self.parameters:
-            parameter_list.append(dict(param))
-        if len(parameter_list) != 0:
-            yield 'parameters', parameter_list
+        property_list = []
+        for prop in self.properties:
+            property_list.append(dict(prop))
+        if len(property_list) != 0:
+            yield 'properties', property_list
         children_list = []
         for child in self.children:
             children_list.append(dict(child))
