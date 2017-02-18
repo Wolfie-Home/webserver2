@@ -1,0 +1,9 @@
+{% extends "default_layout.html" %}
+
+{% block js_at_the_end %}
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/global.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/stores/Store.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/stores/DeviceStore.js') }}"></script>
+{% endblock %}
+
