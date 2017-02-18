@@ -49,8 +49,6 @@ class Property:
                     df_id = df['id']
                     value = DataType.encode[df['type']](property_dict[key])
                     rfv_dao.insert_single(dr_id, df_id, value)
-
-
                 # Then get list of datafields
                 # FIXME: get result using
                 # result_records = rfv_dao.select_multi()
@@ -82,10 +80,22 @@ class Property:
         with sqlite3.connect(settings.db) as con:
             # get DAOs
             df_dao = DataFieldDao(con)
+            rfv_dao = RecordFieldValueDao(con)
 
             try:
-                # get user
+                # get datafield
                 result_dao = df_dao.select_multi(device_id)
+                # get record
+                record_dict = {}
+                for df in result_dao:
+                    record = rfv_dao.select_multi(df['id'])
+                    if record:
+                        copy = dict(record[0])
+                        copy['value'] = DataType.decode[df['type']](copy['value'])
+                        record_dict[df['name']] = copy
+                    else:
+                        record_dict[df['name']] = None
+
                 pass
             except Exception as e:
                 con.rollback()
@@ -94,6 +104,8 @@ class Property:
             assert_NoRecord(result_dao, "No device record with this criteria")
             result = []
             for df in result_dao:
-                result.append(PropertyModel(**df))
+                prop = PropertyModel(**df)
+                prop.records.append(record_dict[df['name']])
+                result.append(prop)
         return result
     pass
