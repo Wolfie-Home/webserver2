@@ -24,9 +24,15 @@ if __name__ == "__main__":
 
     # Then curl again with session code
     command = """\
-        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/device
+        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/device/1/property\
         """ % session_cookie
 
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     (msg, err) = p.communicate()
     print(msg.decode("utf-8"))
+    print("JSON object:")
+    
+    import re, json
+    json_str = re.search('{\w*".*}', msg.decode("utf-8")).group(0)
+    json_data = json.loads(json_str)
+    print(json.dumps(json_data, sort_keys=True, indent=4))

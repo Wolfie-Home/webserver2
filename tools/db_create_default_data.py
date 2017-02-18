@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.abspath('..'))
 from database.service.user import User as UserSvc
 from database.service.location import Location as LocationSvc
 from database.service.device import Device as DeviceSvc
+from database.service.property import Property as PropertySvc
 from database.datatype import DataType
 from database.service.exceptions import AlreadyExistsError, NoRecordError
 
@@ -137,33 +138,33 @@ if __name__ == '__main__':
     """
     Create a device
     """
-    data_list = [
+    property_list = [
         {"type": "boolean", "name": "switch", "controllable": False, "description": "Default switch"},
         {"type": "integer", "name": "Green", "controllable": True, "description": "Default greed color value"},
         {"type": "number", "name": "temp", "controllable": False, "description": "Default temperature value"},
         {"type": "string", "name": "msg", "controllable": True, "description": "Default messages to device"}
     ]
     try:
-        device_tmp1 = DeviceSvc.create('defaultDevice1', user.id, data_list,
+        device_tmp1 = DeviceSvc.create('defaultDevice1', user.id, property_list,
                                       description="This is default device in nowhere")
-        device_tmp2 = DeviceSvc.create('defaultDevice2', user.id, data_list, location_id=house.id,
+        device_tmp2 = DeviceSvc.create('defaultDevice2', user.id, property_list, location_id=house.id,
                                        description="This is default device #1 in the house")
-        device_tmp3 = DeviceSvc.create('defaultDevice3', user.id, data_list, location_id=house.id,
+        device_tmp3 = DeviceSvc.create('defaultDevice3', user.id, property_list, location_id=house.id,
                                        mother_id=device_tmp2.id,
                                        description="This is default device #2 in the house")
-        device_tmp4 = DeviceSvc.create('defaultDevice4', user.id, data_list, location_id=rooms[0].id,
+        device_tmp4 = DeviceSvc.create('defaultDevice4', user.id, property_list, location_id=rooms[0].id,
                                        description="This is default device #1 in room 1")
-        device_tmp5 = DeviceSvc.create('defaultDevice5', user.id, data_list, location_id=rooms[0].id,
+        device_tmp5 = DeviceSvc.create('defaultDevice5', user.id, property_list, location_id=rooms[0].id,
                                        mother_id=device_tmp4.id,
                                        description="This is default device #2 in room 1")
-        device_tmp6 = DeviceSvc.create('defaultDevice6', user.id, data_list, location_id=rooms[0].id,
+        device_tmp6 = DeviceSvc.create('defaultDevice6', user.id, property_list, location_id=rooms[0].id,
                                        mother_id=device_tmp4.id,
                                        description="This is default device #3 in room 1")
-        device_tmp7 = DeviceSvc.create('defaultDevice7', user.id, data_list, location_id=rooms[1].id,
+        device_tmp7 = DeviceSvc.create('defaultDevice7', user.id, property_list, location_id=rooms[1].id,
                                        description="This is default device #1 in room 2")
-        device_tmp8 = DeviceSvc.create('defaultDevice8', user.id, data_list, location_id=rooms[1].id,
+        device_tmp8 = DeviceSvc.create('defaultDevice8', user.id, property_list, location_id=rooms[1].id,
                                        description="This is default device #2 in room 2")
-        device_tmp9 = DeviceSvc.create('defaultDevice9', user.id, data_list, location_id=rooms[2].id,
+        device_tmp9 = DeviceSvc.create('defaultDevice9', user.id, property_list, location_id=rooms[2].id,
                                        description="This is default device #1 in room 3")
     except AlreadyExistsError as error:
         print(error)
@@ -172,8 +173,8 @@ if __name__ == '__main__':
         print('Default device creation success!')
     finally:
         try:
-            device = DeviceSvc.get_device(user.id, name='defaultDevice1')
-            parameters = DeviceSvc.get_parameter_list(user.id, device.id)
+            device = DeviceSvc.get(user.id, name='defaultDevice1')
+            parameters = PropertySvc.get_list(user.id, device.id)
         except NoRecordError as error:
             print(error)
             print('Device retrieve failed')
