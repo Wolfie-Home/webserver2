@@ -27,6 +27,12 @@ def home():
 def location():
     return render_template('location.html')
 
+@webpage.route('/devices')
+@login_required_redirect
+def devices():
+    return render_template('devices.html')   
+
 @webpage.route('/test')
+@login_required_redirect
 def test():
-    return render_template('default_layout.html');
+    return render_template('test.html');

@@ -1,6 +1,14 @@
 {% extends "default_layout.html" %}
 
 {% block js_at_the_end %}
-<script type="text/javascript" src="{{ url_for('static', filename='js/location.js') }}"></script>
+
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/global.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/stores/Store.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/stores/LocationStore.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/stores/LocationDevicesStore.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/views/house/location.js') }}"></script>
 {% endblock %}
 
