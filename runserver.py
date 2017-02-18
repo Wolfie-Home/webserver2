@@ -16,4 +16,4 @@ app.register_blueprint(webpage)
 app.register_blueprint(webapi)
 
 if __name__ == '__main__':
-    app.run(host='::', port=8000, debug=enable_debugging)
+    app.run(host='0.0.0.0', port=8000, debug=enable_debugging)

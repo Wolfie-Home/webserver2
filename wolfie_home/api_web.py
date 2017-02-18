@@ -3,6 +3,7 @@ from flask import Blueprint, request, session
 from database.service.location import Location as LocationSvc
 from database.service.user import User as UserSvc
 from database.service.device import Device as DeviceSvc
+from database.service.property import Property as PropertySvc
 from database.service.exceptions import NoRecordError
 from wolfie_home.common import request_content_json, login_required_json
 from wolfie_home.common import response_json_ok, response_json_error
@@ -137,7 +138,7 @@ def device_list_in_location(id):
     user_id = session.get('user_id', None)
     # verify from db
     try:
-        devices = DeviceSvc.get_device_list(user_id, location_id=id)
+        devices = DeviceSvc.get_list(user_id, location_id=id)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
     resp = dict()
@@ -158,7 +159,7 @@ def device_list():
     user_id = session.get('user_id', None)
     # verify from db
     try:
-        devices = DeviceSvc.get_device_list(user_id)
+        devices = DeviceSvc.get_list(user_id)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
     resp = dict()
@@ -179,13 +180,13 @@ def device_detail(id):
     user_id = session.get('user_id', None)
     try:
         # Get devices
-        device = DeviceSvc.get_device(user_id, id=id)
+        device = DeviceSvc.get(user_id, id=id)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
 
     try:
         # Get children devices
-        device.children = DeviceSvc.get_device_list(user_id, mother_id=id)
+        device.children = DeviceSvc.get_list(user_id, mother_id=id)
     except NoRecordError:
         # There is a case of no children devices
         device.children = []
@@ -195,9 +196,9 @@ def device_detail(id):
     return response_json_ok(resp, "Retrieve devices successful.")
 
 
-@webapi.route('/api/device/<int:device_id>/parameter', methods=['GET'])
+@webapi.route('/api/device/<int:device_id>/property', methods=['GET'])
 @login_required_json
-def parameter_list(device_id):
+def property_list(device_id):
     """
     get list of parameter of device
     """
@@ -205,7 +206,7 @@ def parameter_list(device_id):
     user_id = session.get('user_id', None)
     # verify from db
     try:
-        parameters = DeviceSvc.get_parameter_list(user_id, device_id)
+        parameters = PropertySvc.get_list(user_id, device_id)
     except NoRecordError as error:
         return response_json_error({}, str(error))  # Usually username password mismatch
     resp = dict()
