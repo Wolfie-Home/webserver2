@@ -15,7 +15,7 @@ if __name__ == "__main__":
     command = """\
         curl -v -H "Content-Type: application/json" \
             -X POST -d '{"username":"defaultUser","password":"dummypassword"}' \
-            http://localhost:8000/api/login 2>&1 |grep -o -P 'session=[^;]*' \
+            http://localhost:8000/api/login 2>&1 |grep -o -P 'session=[^;]*'\
         """
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     (msg, err) = p.communicate()
@@ -24,15 +24,18 @@ if __name__ == "__main__":
 
     # Then curl again with session code
     command = """\
-        curl -v --cookie "%s" -H "Content-Type: application/json" -X GET http://localhost:8000/api/device/2/property\
+        curl -v --cookie "%s" -H "Content-Type: application/json" \
+        -X POST http://localhost:8000/dev_api/defaultUser/defaultRoom1/defaultDevice2\
+        -d '{"content":{"switch":false,"Green":50,"temp":1000.98,"msg":"Changed"}}'\
         """ % session_cookie
 
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     (msg, err) = p.communicate()
     print(msg.decode("utf-8"))
     print("JSON object:")
-    
+
     import re, json
+
     json_str = re.search('{\w*".*}', msg.decode("utf-8")).group(0)
     json_data = json.loads(json_str)
     print(json.dumps(json_data, sort_keys=True, indent=4))
