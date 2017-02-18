@@ -33,6 +33,12 @@ var DeviceView = React.createClass({
 		deviceSelectedStore.registerDeviceSelected(deviceSelected);
 	},
 
+	handleControlToggle: function (event) {
+		this.setState({
+			'control': event.target.checked
+		});
+	},
+
 	render: function () {
 		var notReadyUi = React.createElement(
 			'div',
@@ -159,10 +165,46 @@ var DeviceView = React.createClass({
 				)
 			);
 		} else {
-			throw "not yet..";
+			ui = React.createElement(
+				'div',
+				null,
+				' not yet.. '
+			);
 		}
 
-		return ui;
+		var controlBtn = React.createElement(
+			'div',
+			{ className: 'row' },
+			React.createElement(
+				'div',
+				{ className: 'input-group' },
+				React.createElement(
+					'span',
+					{ className: 'input-group-addon' },
+					'Control:',
+					React.createElement('input', { type: 'checkbox', 'aria-label': 'control', onChange: this.handleControlToggle })
+				)
+			)
+		);
+
+		return React.createElement(
+			'div',
+			null,
+			React.createElement(
+				'div',
+				{ className: 'row' },
+				' ',
+				controlBtn,
+				' '
+			),
+			React.createElement(
+				'div',
+				{ className: 'row' },
+				' ',
+				ui,
+				' '
+			)
+		);
 	}
 
 });

@@ -31,6 +31,12 @@ var DeviceView = React.createClass({
 		deviceSelectedStore.registerDeviceSelected(deviceSelected);
 	},
 
+	handleControlToggle: function(event) {
+		this.setState({
+			'control': event.target.checked
+		});
+	},
+
 	render: function() {
 		var notReadyUi = (<div> </div>);
 		if (!this.state['currentDeviceId']) {
@@ -91,10 +97,25 @@ var DeviceView = React.createClass({
 	  				</div>
 				</div>);
 		} else {
-			throw "not yet..";
+			ui = <div> not yet.. </div>;
 		}
 
-		return ui;
+		var controlBtn = (
+				<div className='row'>
+				    <div className="input-group">
+				      <span className="input-group-addon">
+				        Control:<input type="checkbox" aria-label="control" onChange={this.handleControlToggle}/>
+				      </span>
+				    </div>
+			    </div>
+			);
+
+		return (
+			<div>
+				<div className='row'> {controlBtn} </div>
+				<div className='row'> {ui} </div>
+			</div>
+			);
 
 	}
 
