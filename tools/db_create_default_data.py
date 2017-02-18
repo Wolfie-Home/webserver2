@@ -136,7 +136,7 @@ if __name__ == '__main__':
         print(type(decoded), decoded)
 
     """
-    Create a device
+    Create a device and example value
     """
     property_list = [
         {"type": "boolean", "name": "switch", "controllable": False, "description": "Default switch"},
@@ -144,28 +144,42 @@ if __name__ == '__main__':
         {"type": "number", "name": "temp", "controllable": False, "description": "Default temperature value"},
         {"type": "string", "name": "msg", "controllable": True, "description": "Default messages to device"}
     ]
+    value_dict = {
+        "switch": True,
+        "Green": 125,
+        "temp": 30.23,
+        "msg": "Default"
+    }
     try:
-        device_tmp1 = DeviceSvc.create('defaultDevice1', user.id, property_list,
+        # Create device
+        devices_tmp = [None for _ in range(9)]
+
+        devices_tmp[0] = DeviceSvc.create('defaultDevice1', user.id, property_list,
                                       description="This is default device in nowhere")
-        device_tmp2 = DeviceSvc.create('defaultDevice2', user.id, property_list, location_id=house.id,
+        devices_tmp[1] = DeviceSvc.create('defaultDevice2', user.id, property_list, location_id=house.id,
                                        description="This is default device #1 in the house")
-        device_tmp3 = DeviceSvc.create('defaultDevice3', user.id, property_list, location_id=house.id,
-                                       mother_id=device_tmp2.id,
+        devices_tmp[2] = DeviceSvc.create('defaultDevice3', user.id, property_list, location_id=house.id,
+                                       mother_id=devices_tmp[1].id,
                                        description="This is default device #2 in the house")
-        device_tmp4 = DeviceSvc.create('defaultDevice4', user.id, property_list, location_id=rooms[0].id,
+        devices_tmp[3] = DeviceSvc.create('defaultDevice4', user.id, property_list, location_id=rooms[0].id,
                                        description="This is default device #1 in room 1")
-        device_tmp5 = DeviceSvc.create('defaultDevice5', user.id, property_list, location_id=rooms[0].id,
-                                       mother_id=device_tmp4.id,
+        devices_tmp[4] = DeviceSvc.create('defaultDevice5', user.id, property_list, location_id=rooms[0].id,
+                                       mother_id=devices_tmp[3].id,
                                        description="This is default device #2 in room 1")
-        device_tmp6 = DeviceSvc.create('defaultDevice6', user.id, property_list, location_id=rooms[0].id,
-                                       mother_id=device_tmp4.id,
+        devices_tmp[5] = DeviceSvc.create('defaultDevice6', user.id, property_list, location_id=rooms[0].id,
+                                       mother_id=devices_tmp[3].id,
                                        description="This is default device #3 in room 1")
-        device_tmp7 = DeviceSvc.create('defaultDevice7', user.id, property_list, location_id=rooms[1].id,
+        devices_tmp[6] = DeviceSvc.create('defaultDevice7', user.id, property_list, location_id=rooms[1].id,
                                        description="This is default device #1 in room 2")
-        device_tmp8 = DeviceSvc.create('defaultDevice8', user.id, property_list, location_id=rooms[1].id,
+        devices_tmp[7] = DeviceSvc.create('defaultDevice8', user.id, property_list, location_id=rooms[1].id,
                                        description="This is default device #2 in room 2")
-        device_tmp9 = DeviceSvc.create('defaultDevice9', user.id, property_list, location_id=rooms[2].id,
+        devices_tmp[8] = DeviceSvc.create('defaultDevice9', user.id, property_list, location_id=rooms[2].id,
                                        description="This is default device #1 in room 3")
+
+        # input data
+        for dev in devices_tmp:
+            PropertySvc.save_record_dict(dev.id, dev.location_id, value_dict)
+
     except AlreadyExistsError as error:
         print(error)
         print('Default device already exists...')
@@ -183,4 +197,5 @@ if __name__ == '__main__':
             print(device)
             for param in parameters:
                 print(param)
+
     pass

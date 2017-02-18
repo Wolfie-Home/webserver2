@@ -33,6 +33,7 @@ class RecordFieldValue:
         :return: sqlite3 row object. key = (`value`,`time`)
         """
         # TODO: Do we need device_id???
+        # FIXME: get it from datarecord id too
         self.cur.execute('\
             SELECT A.`value` AS `value`, \
                     B.`created_time` AS `time`\
