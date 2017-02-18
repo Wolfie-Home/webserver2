@@ -43,10 +43,15 @@ DeviceStore.prototype._getDeviceDetail = function(action) {
     if (this._getDeviceDetailLocked) {
         return ;
     }
-    this._getDeviceDetailLocked = true;
-
 
     var deviceId = Actions.extractGetDeviceDetailAction(action);
+    if (_.has(this._deviceDetail, deviceId)) {
+        // already has in the table
+        return ;
+    }
+    
+    this._getDeviceDetailLocked = true;
+
     var url = '/api/device/' + deviceId;
 
     this._getDeviceDetail.deviceId = deviceId;
@@ -56,7 +61,7 @@ DeviceStore.prototype._getDeviceDetail = function(action) {
         if (this._getDeviceDetail.callbackNum == 2 && this._getDeviceDetail.callbackSuccesses == 2) {
             // notification ready
             var data = this._getDeviceDetail.data;
-            data['property'] = this._getDeviceDetail.property;
+            data['property'] = this._getDeviceDetail.property['parameters'];
             this._deviceDetail[this._getDeviceDetail.deviceId] = data;
             this._notifyCallbacks(this.DEVICE_DETAIL_ADDED_EVENT);
         } else if (this._getDeviceDetail.callbackNum == 2) {
@@ -109,7 +114,12 @@ DeviceStore.prototype._getDeviceDetail = function(action) {
         this._getDeviceDetail.callback();
     });
 
-}
+};
+
+DeviceStore.prototype.getDevices = function() {
+    // WARNING, shodow copy.
+    return this._deviceDetail;
+};
 
 // get device list. a device format is like
 // [{

@@ -64,7 +64,7 @@ LocationStore.prototype.registerUpdateCallback = function(cb) {
     return this._registerCallback(cb, this._updateEvent);
 };
 LocationStore.prototype.unregisterUpdateCallback = function(index) {
-    this._registerCallback(index, this._updateEvent);
+    this._unregisterCallback(index, this._updateEvent);
 };
 
 locationStoreTest = function() {
