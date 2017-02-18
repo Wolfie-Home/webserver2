@@ -89,7 +89,7 @@ class Property:
                 for df in result_dao:
                     record = rfv_dao.select_multi(df['id'])
                     if record:
-                        copy = dict(record[0])
+                        copy = dict(record[len(record) - 1])
                         copy['value'] = DataType.decode[df['type']](copy['value'])
                         record_dict[df['name']] = copy
                     else:
