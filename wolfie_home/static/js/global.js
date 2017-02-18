@@ -4,7 +4,7 @@ dispatcher = new Flux.Dispatcher();
 
 // @create* return a action
 // @extract*, return null on failure, and data on success.
-Actions = {
+var Actions = {
 
     /*
     an action
@@ -55,17 +55,8 @@ Actions = {
         return this._extract(this.GET_DEVICE_LIST_ACTION, action);
     },
 
-    // @device, a element from DeviceStore.getDeviceList()
-    SELECT_DEVICE_ACTION: '4',
-    createSelectDeviceAction: function(device) {
-        return this._create(this.SELECT_DEVICE_ACTION, device);
-    },
-    extractSelectDeviceAction: function(action) {
-        return this._extract(this.SELECT_DEVICE_ACTION, action);
-    },
-
     // DeviceStore.js
-    DEVICE_DETAIL_ACTION: '5',
+    DEVICE_DETAIL_ACTION: '4',
     createGetDeviceDetailAction: function(deviceId) {
         return this._create(this.DEVICE_DETAIL_ACTION, deviceId)
     },

@@ -4,6 +4,7 @@
 var DeviceListView = React.createClass({
     displayName: 'DeviceListView',
 
+
     deviceListUpdateCallbackId: null,
 
     getInitialState: function () {
@@ -34,8 +35,12 @@ var DeviceListView = React.createClass({
     handleDeviceClicked: function (device, index) {
         // @device is a element in this.state['deviceList']
         // TODO
-        var action = Actions.createSelectDeviceAction(_.clone(device));
+        var action = Actions.createSelectDeviceAction(device['id']);
         dispatcher.dispatch(action);
+
+        var action = Actions.createGetDeviceDetailAction(device['id']);
+        dispatcher.dispatch(action);
+
         this.setState({
             'activeIndex': index
         });
@@ -99,6 +104,9 @@ var testDeviceListView = function (deviceStore, htmlContainerId) {
     ReactDOM.render(ui, document.getElementById(htmlContainerId));
 };
 
-var ui = React.createElement(DeviceListView, null);
-ReactDOM.render(ui, document.getElementById('main'));
+// var ui = (<DeviceListView />);
+// ReactDOM.render(
+//     ui,
+//     document.getElementById('main')
+// );
 
