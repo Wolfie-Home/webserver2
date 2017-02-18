@@ -65,7 +65,6 @@ class Property:
                 con.commit()
         return
 
-
     @classmethod
     def get_list(cls, user_id, device_id):
         """
@@ -95,7 +94,6 @@ class Property:
                         record_dict[df['name']] = copy
                     else:
                         record_dict[df['name']] = None
-
                 pass
             except Exception as e:
                 con.rollback()
