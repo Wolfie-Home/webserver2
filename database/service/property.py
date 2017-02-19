@@ -49,6 +49,7 @@ class Property:
                     df_id = df['id']
                     value = DataType.encode[df['type']](property_dict[key])
                     rfv_dao.insert_single(dr_id, df_id, value)
+                    print(str(dr_id) + " and " + str(df_id) + " and " + str(value))
                 # Then get list of datafields
                 # FIXME: get result using
                 # result_records = rfv_dao.select_multi()

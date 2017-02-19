@@ -1,4 +1,3 @@
-import paho.mqtt
 from database.service.location import Location as LocationSvc
 from database.service.user import User as UserSvc
 from database.service.device import Device as DeviceSvc
@@ -28,11 +27,13 @@ def mqtt_on_message(client, userdata, msg):
         username = matched.group(1)
         location_name = matched.group(2)
         device_name = matched.group(3)
+        print("MQTT received. Topic: " + username + " " + location_name +" " + device_name + " Payload: " + str(payload))
         # Get user id
         try:
             password = json_payload["password"]
             user = UserSvc.verify(username, password)
             user_id = user.id
+            print("User ID: " + str(user_id))
         except NoRecordError as error:
             print(error)
             return # Usually username password mismatch
@@ -43,15 +44,17 @@ def mqtt_on_message(client, userdata, msg):
         try:
             location = LocationSvc.get(user_id, name=location_name)
             device = DeviceSvc.get(user_id, name=device_name)
+            print("Location ID: " + str(location.id))
+            print("Device ID: " + str(device.id))
         except NoRecordError as error:
             print(error)
             return # No record
 
         # Not put data in there
         try:
+            print("content: " + str(json_payload["content"]))
             PropertySvc.save_record_dict(device.id, location.id, json_payload["content"])
         except Exception as error:
             print(error)
             return
-    print("MQTT received. Topic: " + str(topic) + " Payload: " + str(payload))
     return
