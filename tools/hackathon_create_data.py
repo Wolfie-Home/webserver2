@@ -138,12 +138,20 @@ if __name__ == '__main__':
     """
     Create a device and example value
     """
+    # PI
     Pi_property = [
         {"type": "boolean", "name": "power", "controllable": False, "description": "connection status"},
         {"type": "string", "name": "switch", "controllable": False, "description": "Default switch"}
     ]
     Pi_dict = {
         "power": True,
+        "switch": "On"
+    }
+    # Relay
+    Relay_property = [
+        {"type": "string", "name": "switch", "controllable": True, "description": "Default switch"}
+    ]
+    Relay_dict = {
         "switch": "On"
     }
 
@@ -167,9 +175,9 @@ if __name__ == '__main__':
                                       description="This is default device in CEWIT")
         devices_tmp[1] = DeviceSvc.create('RPi_2', user.id, Pi_property, location_id=house.id,
                                        description="This is default device in CEWIT")
-        devices_tmp[2] = DeviceSvc.create('defaultDevice3', user.id, property_list, location_id=house.id,
+        devices_tmp[2] = DeviceSvc.create('Relay', user.id, Relay_property, location_id=house.id,
                                        mother_id=devices_tmp[0].id,
-                                       description="This is default device #2 in the house")
+                                       description="This is a relay connected to RPi_1")
         devices_tmp[3] = DeviceSvc.create('defaultDevice4', user.id, property_list, location_id=house.id,
                                        mother_id=devices_tmp[0].id,
                                        description="This is default device #1 in room 1")
@@ -185,7 +193,7 @@ if __name__ == '__main__':
         PropertySvc.save_record_dict(devices_tmp[1].id, devices_tmp[1].location_id, Pi_dict)
 
         # Rest
-        PropertySvc.save_record_dict(devices_tmp[2].id, devices_tmp[2].location_id, value_dict)
+        PropertySvc.save_record_dict(devices_tmp[2].id, devices_tmp[2].location_id, Relay_dict)
         PropertySvc.save_record_dict(devices_tmp[3].id, devices_tmp[3].location_id, value_dict)
         PropertySvc.save_record_dict(devices_tmp[4].id, devices_tmp[4].location_id, value_dict)
         PropertySvc.save_record_dict(devices_tmp[5].id, devices_tmp[5].location_id, value_dict)
