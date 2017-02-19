@@ -20,8 +20,9 @@ record_insert_regex = re.compile("record\/(\w+)\/(\w+)\/(\w+)")
 # The callback for when a PUBLISH message is received from the server.
 def mqtt_on_message(client, userdata, msg):
     topic = msg.topic
-    payload = msg.payload
+    payload = msg.payload.decode('utf8')
     matched = record_insert_regex.match(topic)
+    print(payload)
     json_payload = json.loads(payload)
     if matched:
         username = matched.group(1)
@@ -53,3 +54,4 @@ def mqtt_on_message(client, userdata, msg):
             print(error)
             return
     print("MQTT received. Topic: " + str(topic) + " Payload: " + str(payload))
+    return
