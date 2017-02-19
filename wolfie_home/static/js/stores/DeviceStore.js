@@ -15,7 +15,7 @@ var DeviceStore = function() {
     dispatcher.register(this._updateDeviceDetail.bind(this));
 
     // refresh added devices
-    var refreshPeriod = 4000;
+    var refreshPeriod = 500;
     setInterval((function() {
         // refresh all. very bad performance
         if (deviceSelectedStore != undefined) {
