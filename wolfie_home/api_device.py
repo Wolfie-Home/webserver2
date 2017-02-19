@@ -5,7 +5,7 @@ from database.service.user import User as UserSvc
 from database.service.device import Device as DeviceSvc
 from database.service.property import Property as PropertySvc
 from database.service.exceptions import NoRecordError
-from wolfie_home.common import request_content_json, login_required_json
+from wolfie_home.common import request_content_json
 from wolfie_home.common import response_json_ok, response_json_error
 
 devapi = Blueprint('device_api', __name__, template_folder='templates')
@@ -44,6 +44,11 @@ def record_insert(content, username, location_name, device_name):
     except Exception:
         return response_json_error({}, "Wrong parameter")
 
+    # Publish MQTT data
+    from runserver import mqtt_client
+    topic = "control/" + username + "/" + location_name + "/" + device_name
+    mqtt_client.publish(topic=topic, payload=request.get_data(), qos=1)
+    # return
     return response_json_ok({}, "Insertion good")
 
 """
