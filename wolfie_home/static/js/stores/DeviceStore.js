@@ -135,7 +135,7 @@ DeviceStore.prototype._updateDeviceDetail = function(action) {
     var update = updateData['update'];
 
     // var url = 'dev_api/'+device['location']+'/'device['name'];
-    var url = 'dev_api/defaultUser/'+'defaultRoom1'+'/'+device['name']; // hardcode it for now.
+    var url = 'dev_api/defaultUser/'+'HackCEWIT'+'/'+device['name']; // hardcode it for now.
     var data = {
         'type': 'info',
         'content': update,
