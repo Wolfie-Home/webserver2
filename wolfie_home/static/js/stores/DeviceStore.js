@@ -6,11 +6,24 @@ var DeviceStore = function() {
 
     this.DEVICE_LIST_CHANGE_EVENT = '1';
     this.DEVICE_DETAIL_ADDED_EVENT = '2';
+    this.DEVICE_DETAIL_UPDATED_EVENT = '3';
     this._deviceList = [];
     this._deviceDetail = {}; // id => detail object
     this._getDeviceDetailLocked = false;
     dispatcher.register(this._getDeviceList.bind(this));
     dispatcher.register(this._getDeviceDetail.bind(this));
+    dispatcher.register(this._updateDeviceDetail.bind(this));
+
+    // refresh added devices
+    var refreshPeriod = 4000;
+    setInterval((function() {
+        // refresh all. very bad performance
+        if (deviceSelectedStore != undefined) {
+            var deviceId = deviceSelectedStore.getDeviceId();
+            var action = Actions.createGetDeviceDetailAction(deviceId);
+            dispatcher.dispatch(action);
+        }
+    }).bind(this), refreshPeriod);
 };
 DeviceStore.prototype = Object.assign({}, ReactStore.prototype);
 
@@ -45,10 +58,6 @@ DeviceStore.prototype._getDeviceDetail = function(action) {
     }
 
     var deviceId = Actions.extractGetDeviceDetailAction(action);
-    if (_.has(this._deviceDetail, deviceId)) {
-        // already has in the table
-        return ;
-    }
     
     this._getDeviceDetailLocked = true;
 
@@ -116,6 +125,56 @@ DeviceStore.prototype._getDeviceDetail = function(action) {
 
 };
 
+DeviceStore.prototype._updateDeviceDetail = function(action) {
+    if (Actions.extractUpdateDeviceDetailAction(action) == null) {
+        return ;
+    }
+
+    var updateData = Actions.extractUpdateDeviceDetailAction(action);
+    var device = updateData['device'];
+    var update = updateData['update'];
+
+    // var url = 'dev_api/'+device['location']+'/'device['name'];
+    var url = 'dev_api/defaultUser/'+'defaultRoom1'+'/'+device['name']; // hardcode it for now.
+    var data = {
+        'type': 'info',
+        'content': update,
+        'password': 'no needed',
+    };
+
+    this._updateDeviceDetail.deviceId = device['id'];
+    $.ajax(url, {
+        'context': this,
+        'dataType': 'json',
+        'contentType': 'application/json',
+        'data': JSON.stringify(data),
+        'method': 'POST'
+    }).done(function(data, textStatus, jqxhr) {
+        if (jqxhr.status == 200) {
+            // re-getting device
+            var action = Actions.createGetDeviceDetailAction(this._updateDeviceDetail.deviceId);
+            dispatcher.dispatch(action);
+            this._notifyCallbacks(this.DEVICE_DETAIL_UPDATED_EVENT);
+        } else {
+            if (showMsg) {
+                showMsg('failed to update');
+            }
+        }
+    }).fail(function(){
+        if (showMsg) {
+            showMsg('server error.');
+        }
+    });
+
+
+// @updateData : {
+    //     'device': {} // type of detail device from DeviceStore 
+    //     'update': {} // name => value object..   
+    // }
+
+    // notify.
+}
+
 DeviceStore.prototype.getDevices = function() {
     // WARNING, shodow copy.
     return this._deviceDetail;
@@ -149,11 +208,19 @@ DeviceStore.prototype.unregisterDeviceListChange = function(index) {
     return this._unregisterCallback(index, this.DEVICE_LIST_CHANGE_EVENT);
 };
 
+// override previous one is also means added.
 DeviceStore.prototype.registerDeviceDetailAdded = function(callback) {
     return this._registerCallback(callback, this.DEVICE_DETAIL_ADDED_EVENT);
 };
 DeviceStore.prototype.unregisterDeviceDetailAdded = function(index) {
     return this._unregisterCallback(index, this.DEVICE_DETAIL_ADDED_EVENT);
+};
+
+DeviceStore.prototype.registerDeviceDetailUpdated = function(callback) {
+    return this._registerCallback(callback, this.DEVICE_DETAIL_UPDATED_EVENT);
+};
+DeviceStore.prototype.registerDeviceDetailUpdated = function(index) {
+    return this._registerCallback(index, this.DEVICE_DETAIL_UPDATED_EVENT);
 };
 
 // deviceStore.getDeviceList() should return list, 

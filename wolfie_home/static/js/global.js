@@ -63,6 +63,19 @@ var Actions = {
     extractGetDeviceDetailAction: function(action) {
         return this._extract(this.DEVICE_DETAIL_ACTION, action);
     },
+
+    // DeviceStore.js
+    // @updateData : {
+    //     'device': {} // type of detail device from DeviceStore 
+    //     'update': {} // name => value object..   
+    // }
+    DEVICE_DETAIL_UPDATE_ACTION: '5',
+    createUpdateDeviceDetailAction: function(updateData) {
+        return this._create(this.DEVICE_DETAIL_UPDATE_ACTION, updateData);
+    },
+    extractUpdateDeviceDetailAction: function(action) {
+        return this._extract(this.DEVICE_DETAIL_UPDATE_ACTION, action);
+    },
     
 };
 

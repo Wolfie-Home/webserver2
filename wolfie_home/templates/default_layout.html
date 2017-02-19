@@ -12,6 +12,8 @@
     <script type="text/javascript" 
              src="{{ url_for('static', filename='js/libraries/jquery.min.js') }}"></script>
     <script type="text/javascript" 
+             src="{{ url_for('static', filename='js/libraries/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" 
              src="{{ url_for('static', filename='js/libraries/material.js') }}"></script>
     <script type="text/javascript" 
              src="{{ url_for('static', filename='js/libraries/ripples.js') }}"></script>
@@ -56,7 +58,31 @@
       </div>
     </div>
 
+  <div class="modal" id="showMsgModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Message</h4>
+        </div>
+        <div class="modal-body" id="showMsgModalBody" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" >
+  function showMsg(msg) {
+    $('#showMsgModalBody').html(msg);
+    $('#showMsgModal').modal('show');
+  }
+  </script>
+
   </body>
+
+
   <script type="text/javascript" src="{{ url_for('static', filename='js/others/user.js') }}"></script>
   <script type="text/javascript">
     $.material.init();
