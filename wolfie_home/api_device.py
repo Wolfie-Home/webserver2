@@ -4,9 +4,9 @@ from database.service.user import User as UserSvc
 from database.service.device import Device as DeviceSvc
 from database.service.property import Property as PropertySvc
 from database.service.exceptions import NoRecordError
+from wolfie_home.api_mqtt import mqtt_client
 from wolfie_home.common import request_content_json
 from wolfie_home.common import response_json_ok, response_json_error
-import runserver
 
 devapi = Blueprint('device_api', __name__, template_folder='templates')
 
@@ -16,6 +16,7 @@ def record_insert(content, username, location_name, device_name):
     """
     insert a record
     """
+    global mqtt_client
     # Get user id
     try:
         """
@@ -46,18 +47,19 @@ def record_insert(content, username, location_name, device_name):
 
     # Publish MQTT data
     topic = "control/" + username + "/" + location_name + "/" + device_name
-    runserver.mqtt_client.publish(topic=str(topic), payload=request.get_data(), qos=1)
+    mqtt_client.publish(topic=str(topic), payload=request.get_data(), qos=1)
     print("MQTT publish: " + topic + " payload: ")
     print(request.get_data())
     # return
     return response_json_ok({}, "Insertion good")
 
+
 """
 The following codes is used for debugging purpose.
 """
-from runserver import enable_debugging
+from settings import enable_printing_request, enable_printing_response
 
-if enable_debugging:
+if enable_printing_request:
     @devapi.before_request
     def before():
         print("============================")
@@ -68,7 +70,7 @@ if enable_debugging:
         print("============================")
         pass
 
-
+if enable_printing_response:
     @devapi.after_request
     def after(response):
         print("============================")

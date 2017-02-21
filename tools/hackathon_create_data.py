@@ -143,16 +143,20 @@ if __name__ == '__main__':
         {"type": "boolean", "name": "power", "controllable": False, "description": "connection status"},
         {"type": "string", "name": "switch", "controllable": False, "description": "Default switch"}
     ]
-    Pi_dict = {
+    Pi_dict_1 = {
         "power": True,
-        "switch": "On"
+        "switch": "Off"
+    }
+    Pi_dict_2 = {
+        "power": False,
+        "switch": "Off"
     }
     # Relay
     Relay_property = [
         {"type": "string", "name": "switch", "controllable": True, "description": "Default switch"}
     ]
     Relay_dict = {
-        "switch": "On"
+        "switch": "Off"
     }
 
     property_list = [
@@ -169,7 +173,7 @@ if __name__ == '__main__':
     }
     try:
         # Create device
-        devices_tmp = [None for _ in range(6)]
+        devices_tmp = [None for _ in range(3)]
 
         devices_tmp[0] = DeviceSvc.create('RPi_1', user.id, Pi_property, location_id=house.id,
                                       description="This is default device in CEWIT")
@@ -178,25 +182,13 @@ if __name__ == '__main__':
         devices_tmp[2] = DeviceSvc.create('Relay', user.id, Relay_property, location_id=house.id,
                                        mother_id=devices_tmp[0].id,
                                        description="This is a relay connected to RPi_1")
-        devices_tmp[3] = DeviceSvc.create('defaultDevice4', user.id, property_list, location_id=house.id,
-                                       mother_id=devices_tmp[0].id,
-                                       description="This is default device #1 in room 1")
-        devices_tmp[4] = DeviceSvc.create('defaultDevice5', user.id, property_list, location_id=house.id,
-                                       mother_id=devices_tmp[0].id,
-                                       description="This is default device #2 in room 1")
-        devices_tmp[5] = DeviceSvc.create('defaultDevice6', user.id, property_list, location_id=house.id,
-                                       mother_id=devices_tmp[0].id,
-                                       description="This is default device #3 in room 1")
         # input data
         # RPI
-        PropertySvc.save_record_dict(devices_tmp[0].id, devices_tmp[0].location_id, Pi_dict)
-        PropertySvc.save_record_dict(devices_tmp[1].id, devices_tmp[1].location_id, Pi_dict)
+        PropertySvc.save_record_dict(devices_tmp[0].id, devices_tmp[0].location_id, Pi_dict_1)
+        PropertySvc.save_record_dict(devices_tmp[1].id, devices_tmp[1].location_id, Pi_dict_2)
 
-        # Rest
+        # Relay
         PropertySvc.save_record_dict(devices_tmp[2].id, devices_tmp[2].location_id, Relay_dict)
-        PropertySvc.save_record_dict(devices_tmp[3].id, devices_tmp[3].location_id, value_dict)
-        PropertySvc.save_record_dict(devices_tmp[4].id, devices_tmp[4].location_id, value_dict)
-        PropertySvc.save_record_dict(devices_tmp[5].id, devices_tmp[5].location_id, value_dict)
 
     except AlreadyExistsError as error:
         print(error)

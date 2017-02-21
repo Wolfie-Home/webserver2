@@ -1,23 +1,29 @@
+from flask import Blueprint, request, session
 from database.service.location import Location as LocationSvc
 from database.service.user import User as UserSvc
 from database.service.device import Device as DeviceSvc
 from database.service.property import Property as PropertySvc
 from database.service.exceptions import NoRecordError
 
+'''
+MQTT interface
+'''
+import paho.mqtt.client as mqtt
+import json
+
 # The callback for when the client receives a CONNACK response from the server.
-def mqtt_on_connect(client, userdata, rc):
+def on_connect(client, userdata, rc):
     print("Connected with result code " + str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("record/#")
-    client.on_message = mqtt_on_message
+    client.on_message = on_message
 
-import json
 import re
 record_insert_regex = re.compile("record\/(\w+)\/(\w+)\/(\w+)")
 
 # The callback for when a PUBLISH message is received from the server.
-def mqtt_on_message(client, userdata, msg):
+def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode('utf8')
     matched = record_insert_regex.match(topic)
@@ -58,3 +64,15 @@ def mqtt_on_message(client, userdata, msg):
             print(error)
             return
     return
+
+mqtt_client = mqtt.Client()
+mqtt_client.on_connect = on_connect
+try:
+    mqtt_client.connect(host='127.0.0.1', port=1883, keepalive=60)
+except:
+    print('Failed to connect to the server')
+    exit()
+else:
+    print('Connection Success!')
+    print('MQTT connection is being ready...')
+    mqtt_client.loop_start()

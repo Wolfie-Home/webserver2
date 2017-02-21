@@ -219,9 +219,9 @@ def property_list(device_id):
 """
 The following codes is used for debugging purpose.
 """
-from runserver import enable_debugging
+from settings import enable_printing_request, enable_printing_response
 
-if enable_debugging:
+if enable_printing_request:
     @webapi.before_request
     def before():
         print("============================")
@@ -232,7 +232,7 @@ if enable_debugging:
         print("============================")
         pass
 
-
+if enable_printing_response:
     @webapi.after_request
     def after(response):
         print("============================")
