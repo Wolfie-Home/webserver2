@@ -1,21 +1,7 @@
 ### install dependancies
 
 ``` shell
-# Update repo
-$ sudo apt-get update
-
-# install nginx
-$ sudo apt-get install nginx
-
-# install pip3
-$ sudo apt-get install python3-pip
-
-# install uwsgi, Flask
-$ sudo pip3 install uwsgi
-$ sudo pip3 install Flask
-
-# install sqlite3 command line tools, for Windows or Mac user, go to Sqlite homepage
-$ sudo apt-get install sqlite3
+$ ./install.sh
 ```
 
 ### database

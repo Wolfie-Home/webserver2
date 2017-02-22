@@ -16,7 +16,6 @@ def record_insert(content, username, location_name, device_name):
     """
     insert a record
     """
-    global mqtt_client
     # Get user id
     try:
         """
